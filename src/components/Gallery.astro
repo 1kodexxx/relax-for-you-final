@@ -1,0 +1,311 @@
+---
+import "@/styles/gallery.css";
+
+/**
+ * 🧠 Безопасный Astro-способ собрать все изображения
+ */
+const galleryFiles = import.meta.glob("/public/assets/gallery/*.{jpg,jpeg,png,webp}", {
+  eager: true,
+  import: "default",
+});
+
+const INITIAL_VISIBLE = 12;
+
+/**
+ * ✨ Подготовка массива изображений
+ */
+let baseGallery = Object.keys(galleryFiles).map((path, index) => {
+  const filename = path.split("/").pop()!;
+  const num = Number(filename.match(/\d+/)?.[0] ?? index + 1);
+  const displayNumber = String(num).padStart(2, "0");
+  return {
+    src: `/assets/gallery/${filename}`,
+    alt: `Премиальная атмосфера Relax For You — фото ${displayNumber}`,
+    order: index,
+  };
+});
+
+/**
+ * 🎲 Алгоритм сортировки вставками + рандомизация
+ */
+for (let i = 1; i < baseGallery.length; i++) {
+  const current = baseGallery[i];
+  let j = i - 1;
+  const randomFactor = Math.random() * 2 - 1;
+  while (j >= 0 && baseGallery[j].order + randomFactor > current.order) {
+    baseGallery[j + 1] = baseGallery[j];
+    j--;
+  }
+  baseGallery[j + 1] = current;
+}
+// Дополнительная перемешка (Fisher–Yates)
+for (let i = baseGallery.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [baseGallery[i], baseGallery[j]] = [baseGallery[j], baseGallery[i]];
+}
+---
+
+<section
+  id="gallery"
+  class="gallery"
+  aria-label="Галерея Relax For You"
+  data-gallery
+  data-initial-count={INITIAL_VISIBLE}
+>
+  <!-- === ФОН === -->
+  <div class="gallery-bg" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="gallery-head">
+      <p class="eyebrow">Интерьер</p>
+      <h2 class="title">Галерея Relax For You</h2>
+      <p class="subtitle">
+        Атмосфера уюта, света и спокойствия — каждая деталь продумана для вашего релакса.
+      </p>
+    </div>
+
+    <div class="gallery-grid" data-gallery-grid>
+      {
+        baseGallery.map((item, index) => (
+          <button
+            type="button"
+            class="gallery-card"
+            style={`--delay: ${(index * 0.08).toFixed(2)}s`}
+            data-gallery-card
+            data-index={index}
+            data-src={item.src}
+            data-alt={item.alt}
+            hidden={index >= INITIAL_VISIBLE}
+            aria-label={`Открыть изображение: ${item.alt}`}
+          >
+            <span class="gallery-frame">
+              <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      baseGallery.length > INITIAL_VISIBLE && (
+        <div class="gallery-more">
+          <button type="button" class="gallery-more-button" data-gallery-more aria-expanded="false">
+            Показать больше
+          </button>
+        </div>
+      )
+    }
+  </div>
+
+  <!-- === ЛАЙТБОКС === -->
+  <div class="lightbox" data-lightbox aria-hidden="true">
+    <div class="lightbox-dialog" role="dialog" aria-modal="true" aria-label="Просмотр изображения">
+      <button class="close-btn" type="button" data-lightbox-close aria-label="Закрыть галерею">
+        <span aria-hidden="true">×</span>
+      </button>
+
+      <div class="lightbox-actions" aria-hidden="true">
+        <button
+          class="nav prev"
+          type="button"
+          data-lightbox-prev
+          aria-label="Предыдущее изображение"
+        >
+          <span aria-hidden="true">‹</span>
+        </button>
+        <button
+          class="nav next"
+          type="button"
+          data-lightbox-next
+          aria-label="Следующее изображение"
+        >
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <div class="lightbox-media">
+        <img src="" alt="" class="lightbox-image" data-lightbox-image loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const section = document.querySelector("[data-gallery]");
+    if (!section) return;
+    const cards = Array.from(section.querySelectorAll("[data-gallery-card]"));
+    const lightbox = section.querySelector("[data-lightbox]");
+    if (!cards.length || !lightbox) return;
+
+    const showMoreBtn = section.querySelector("[data-gallery-more]");
+    const initialVisible = Number(section.getAttribute("data-initial-count") ?? "10");
+    let visibleCount = Math.min(initialVisible, cards.length);
+
+    // Изначально скрываем лишние карточки
+    cards.forEach((card, i) => (card.hidden = i >= visibleCount));
+
+    // Кнопка "Показать больше"
+    if (showMoreBtn) {
+      const updateButtonVisibility = () => {
+        if (visibleCount >= cards.length) {
+          showMoreBtn.parentElement?.remove();
+        }
+      };
+
+      updateButtonVisibility();
+
+      showMoreBtn.addEventListener("click", () => {
+        if (visibleCount >= cards.length) return;
+        const hiddenCards = cards.slice(visibleCount, visibleCount + 12);
+        hiddenCards.forEach((card, idx) => {
+          card.hidden = false;
+          card.style.setProperty("--delay", `${(idx * 0.06).toFixed(2)}s`);
+          card.style.animation = "none";
+          void card.offsetWidth;
+          card.style.removeProperty("animation");
+        });
+        visibleCount += hiddenCards.length;
+        updateButtonVisibility();
+      });
+    }
+
+    // Лайтбокс
+    const imageEl = lightbox.querySelector("[data-lightbox-image]");
+    const closeBtn = lightbox.querySelector("[data-lightbox-close]");
+    const prevBtn = lightbox.querySelector("[data-lightbox-prev]");
+    const nextBtn = lightbox.querySelector("[data-lightbox-next]");
+    if (!imageEl || !closeBtn || !prevBtn || !nextBtn) return;
+
+    const items = cards.map((card) => ({
+      src: card.dataset.src ?? "",
+      alt: card.dataset.alt ?? "",
+    }));
+
+    let currentIndex = 0;
+    let isOpen = false;
+    let lastFocusedElement = null;
+
+    const updateLightbox = (i) => {
+      const item = items[i];
+      if (!item) return;
+      imageEl.src = item.src;
+      imageEl.alt = item.alt || "Изображение из галереи Relax For You";
+    };
+
+    const openLightbox = (i) => {
+      currentIndex = i;
+      updateLightbox(currentIndex);
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      lastFocusedElement = document.activeElement;
+      closeBtn.focus();
+      isOpen = true;
+    };
+
+    const closeLightbox = () => {
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      isOpen = false;
+      if (lastFocusedElement && typeof lastFocusedElement.focus === "function")
+        lastFocusedElement.focus();
+    };
+
+    const showNext = () => {
+      currentIndex = (currentIndex + 1) % items.length;
+      updateLightbox(currentIndex);
+    };
+
+    const showPrev = () => {
+      currentIndex = (currentIndex - 1 + items.length) % items.length;
+      updateLightbox(currentIndex);
+    };
+
+    document.addEventListener("keydown", (e) => {
+      if (!isOpen) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") showNext();
+      if (e.key === "ArrowLeft") showPrev();
+    });
+
+    cards.forEach((card, i) => {
+      card.addEventListener("click", () => openLightbox(i));
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openLightbox(i);
+        }
+      });
+    });
+
+    closeBtn.addEventListener("click", closeLightbox);
+    prevBtn.addEventListener("click", showPrev);
+    nextBtn.addEventListener("click", showNext);
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+  })();
+</script>
+
+<style>
+  /* === Фон галереи в стиле About.astro === */
+  .gallery-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0; /* ниже контента */
+    background:
+      radial-gradient(60% 80% at 50% 0%, rgba(255, 79, 167, 0.15), transparent 60%),
+      var(--g-velvet, linear-gradient(180deg, #0e0a0b, #241a20));
+    filter: blur(16px);
+    opacity: 0.92;
+    pointer-events: none; /* ⚡ не блокирует клики */
+  }
+
+  /* Убедимся, что контент выше фона */
+  .gallery .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .gallery-more {
+    position: relative;
+    z-index: 2; /* Кнопка всегда сверху */
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .gallery-more-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 42px;
+    border-radius: 999px;
+    border: 2px solid var(--rose-hot, #ff2b6a);
+    background: transparent;
+    color: #fff;
+    font-size: 1.02rem;
+    font-weight: 100;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 0.35s var(--e1),
+      border-color 0.35s var(--e1),
+      box-shadow 0.4s var(--e1),
+      transform 0.3s var(--e1),
+      background 0.4s var(--e1);
+    backdrop-filter: blur(12px);
+  }
+
+  .gallery-more-button:hover {
+    color: #fff;
+    border-color: color-mix(in oklab, var(--rose-hot) 70%, #ffffff 20%);
+    box-shadow:
+      0 0 22px rgba(255, 43, 106, 0.6),
+      0 10px 32px rgba(255, 43, 106, 0.25);
+    transform: translateY(-3px);
+    background: rgba(255, 43, 106, 0.08);
+  }
+</style>

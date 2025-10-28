@@ -1,0 +1,189 @@
+/* ===== Preloader (с фолбэками) ===== */
+.rfy-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(255, 79, 167, 0.12), transparent 60%),
+    linear-gradient(180deg, #0e0a0b 0%, #241a20 100%);
+  color: #fff;
+  transition:
+    opacity 0.36s ease,
+    visibility 0.36s ease;
+  /* избегаем принудительных пересчётов на старых WebKit */
+  will-change: opacity, visibility;
+}
+
+.rfy-preloader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.rfy-preloader__inner {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  text-align: center;
+}
+
+.rfy-preloader__text strong {
+  font-weight: 900;
+  font-size: clamp(18px, 3vw, 24px);
+  letter-spacing: 0.02em;
+}
+.rfy-preloader__text .sub {
+  display: block;
+  margin-top: 6px;
+  color: #eecfe0;
+  opacity: 0.9;
+}
+.rfy-preloader__text .hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.88rem;
+  color: #c7a9b5;
+  opacity: 0.8;
+}
+
+/* ===== Спиннер: основной вариант (маски + conic-gradient) ===== */
+.rfy-spinner {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  filter: drop-shadow(0 8px 26px rgba(255, 79, 167, 0.35));
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  /* маска-граница; если недоступна — ниже есть фолбэк */
+  -webkit-mask:
+    radial-gradient(farthest-side, #0000 52%, #000 53%) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.ring-1 {
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    var(--rose-hot, #ff2b6a),
+    var(--neon-pink, #ff4fa7),
+    var(--crimson-flare, #e6194b),
+    var(--rose-hot, #ff2b6a)
+  );
+  animation: spin 1.1s linear infinite;
+}
+.ring-2 {
+  inset: 8px;
+  padding: 6px;
+  background: conic-gradient(
+    from 180deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.2)
+  );
+  animation: spin-rev 1.6s linear infinite;
+}
+.dot {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--neon-pink, #ff4fa7);
+  transform: translate(-50%, -50%);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+/* ===== Фолбэк для старых WebKit/Android: без масок ===== */
+@supports not ((-webkit-mask: linear-gradient(#000 0 0)) or (mask-composite: exclude)) {
+  .ring {
+    -webkit-mask: none;
+    mask: none;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+  }
+  .ring-1 {
+    background: none;
+    border-top-color: var(--rose-hot, #ff2b6a);
+    border-right-color: rgba(255, 255, 255, 0.25);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    border-left-color: rgba(255, 255, 255, 0.08);
+    animation: spin 1s linear infinite;
+  }
+  .ring-2,
+  .dot {
+    display: none;
+  }
+}
+
+/* ===== Прогресс-линия декоративная ===== */
+.rfy-preloader__bar {
+  width: 220px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.rfy-preloader__bar .bar {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    var(--rose-hot, #ff2b6a),
+    var(--neon-pink, #ff4fa7),
+    var(--crimson-flare, #e6194b)
+  );
+  animation: slide 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+/* ===== Ключевые кадры ===== */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 rgba(255, 79, 167, 0);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+    box-shadow: 0 0 28px rgba(255, 79, 167, 0.45);
+  }
+}
+@keyframes slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(40%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* ===== Respect reduce motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .ring-1,
+  .ring-2,
+  .dot,
+  .rfy-preloader__bar .bar {
+    animation: none !important;
+  }
+}

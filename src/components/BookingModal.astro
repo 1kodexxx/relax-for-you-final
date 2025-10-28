@@ -1,0 +1,376 @@
+---
+import { getCollection } from "astro:content";
+import "@/styles/booking-modal.css";
+
+/** === ДАННЫЕ ИЗ КОЛЛЕКЦИЙ === */
+const massages = await getCollection("massages");
+const masters = await getCollection("masters");
+
+/** Порядок и подписи категорий */
+const categoryOrder = new Map([
+  ["spa", 1],
+  ["zones", 2],
+]);
+const categoryLabels: Record<string, string> = {
+  spa: "Программы SPA",
+  zones: "Зоны и дополнения",
+};
+
+/** Группировка программ по категориям */
+type Option = { value: string; label: string; order: number };
+type Group = { key: string; title: string; order: number; options: Option[] };
+
+const groupMap = new Map<string, Group>();
+for (const entry of massages) {
+  const d = entry.data as any;
+  const key = d.category ?? "spa";
+  if (!groupMap.has(key)) {
+    groupMap.set(key, {
+      key,
+      title: d.categoryTitle ?? categoryLabels[key] ?? key,
+      order: categoryOrder.get(key) ?? Number.MAX_SAFE_INTEGER,
+      options: [],
+    });
+  }
+  const g = groupMap.get(key)!;
+  g.options.push({
+    value: d.title,
+    label: d.duration ? `${d.title} · ${d.duration}` : d.title,
+    order: typeof d.order === "number" ? d.order : Number.MAX_SAFE_INTEGER,
+  });
+}
+const programGroups = [...groupMap.values()]
+  .map((g) => ({ ...g, options: g.options.sort((a, b) => a.order - b.order) }))
+  .sort((a, b) => a.order - b.order);
+
+const defaultProgram = programGroups[0]?.options[0]?.value ?? "";
+const defaultMaster = masters[0]?.data.name ?? "";
+
+/** Текст в шапке модалки можно переопределить через props */
+const {
+  modalTitle = "Запись на массаж",
+  modalSubtitle = "Укажите удобные дату и время — администратор свяжется в течение 10 минут.",
+} = Astro.props;
+---
+
+<section
+  id="booking"
+  class="booking-modal"
+  data-booking-modal
+  aria-hidden="true"
+  role="presentation"
+>
+  <div class="booking-modal__backdrop" data-backdrop></div>
+
+  <div
+    class="booking-modal__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="booking-modal-title"
+  >
+    <button class="booking-modal__close" type="button" data-close aria-label="Закрыть">×</button>
+
+    <header class="booking-modal__header">
+      <p class="booking-modal__eyebrow">Relax For You</p>
+      <h2 id="booking-modal-title" class="booking-modal__title">{modalTitle}</h2>
+      <p class="booking-modal__subtitle">{modalSubtitle}</p>
+    </header>
+
+    <form class="booking-modal__form" data-form novalidate>
+      <!-- 🐝 honeypot (боты заполняют — мы игнорим) -->
+      <input
+        type="text"
+        name="company"
+        aria-hidden="true"
+        tabindex="-1"
+        autocomplete="off"
+        style="position:absolute;left:-9999px;opacity:0;"
+      />
+
+      <!-- Имя -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="booking-name">Имя*</label>
+        <input
+          id="booking-name"
+          name="name"
+          class="booking-modal__input"
+          type="text"
+          placeholder="Как к вам обращаться?"
+          required
+          autocomplete="name"
+        />
+      </div>
+
+      <!-- Телефон -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="booking-phone">Телефон*</label>
+        <input
+          id="booking-phone"
+          name="phone"
+          class="booking-modal__input"
+          type="tel"
+          placeholder="+7 (___) ___-__-__"
+          required
+          autocomplete="tel"
+          inputmode="tel"
+        />
+      </div>
+
+      <!-- Программа -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="booking-program">Программа массажа*</label>
+        <select id="booking-program" name="selected_program" class="booking-modal__select" required>
+          {
+            programGroups.map((group) => (
+              <optgroup label={group.title}>
+                {group.options.map((o) => (
+                  <option value={o.value} selected={o.value === defaultProgram}>
+                    {o.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          }
+        </select>
+      </div>
+
+      <div class="booking-modal__row">
+        <!-- Дата -->
+        <div class="booking-modal__field">
+          <label class="booking-modal__label" for="booking-date">Дата*</label>
+          <input
+            id="booking-date"
+            name="date"
+            class="booking-modal__input"
+            type="date"
+            required
+            min={new Date().toISOString().split("T")[0]}
+          />
+        </div>
+
+        <!-- Время -->
+        <div class="booking-modal__field">
+          <label class="booking-modal__label" for="booking-time">Время*</label>
+          <input id="booking-time" name="time" class="booking-modal__input" type="time" required />
+        </div>
+      </div>
+
+      <!-- Мастер -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="booking-master">Мастер</label>
+        <select id="booking-master" name="selected_master" class="booking-modal__select">
+          {
+            masters.map(({ data }: { data: any }) => (
+              <option value={data.name} selected={data.name === defaultMaster}>
+                {data.name}
+              </option>
+            ))
+          }
+        </select>
+      </div>
+
+      <!-- Комментарий -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="booking-message">Комментарий</label>
+        <textarea
+          id="booking-message"
+          name="message"
+          class="booking-modal__textarea"
+          rows={4}
+          placeholder="Пожелания, уточнения, предпочтения"></textarea>
+      </div>
+
+      <!-- Кнопки -->
+      <div class="booking-modal__field">
+        <button class="booking-modal__submit" type="submit" data-submit>Отправить заявку</button>
+      </div>
+
+      <div class="booking-modal__actions">
+        <a href="tel:+79113322917" class="booking-modal__alt-btn">📞 Позвонить</a>
+        <a href="https://wa.me/79113322917" class="booking-modal__alt-btn">💬 Написать</a>
+      </div>
+
+      <p class="booking-modal__policy">
+        Отправляя форму, вы соглашаетесь с условиями обработки персональных данных и политикой
+        конфиденциальности Relax For You.
+      </p>
+
+      <div class="booking-modal__feedback" data-feedback role="status" aria-live="polite" hidden>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ================== JS ================== -->
+<script is:inline>
+  (() => {
+    const WEBHOOK_URL = "https://eozqysfcqir0up4.m.pipedream.net"; // ← замени на свой
+
+    const modal = document.querySelector("[data-booking-modal]");
+    if (!modal) return;
+
+    const form = modal.querySelector("[data-form]");
+    const feedback = modal.querySelector("[data-feedback]");
+    const submitBtn = modal.querySelector("[data-submit]");
+    const closeBtns = modal.querySelectorAll("[data-close]");
+    const backdrop = modal.querySelector("[data-backdrop]");
+    const triggers = document.querySelectorAll('a[href="#booking"], [data-booking-trigger]');
+    const firstField = modal.querySelector("#booking-name");
+    const programSelect = modal.querySelector("#booking-program");
+    const masterSelect = modal.querySelector("#booking-master");
+    const phoneInput = modal.querySelector("#booking-phone");
+    const defaultSubmitText = submitBtn?.textContent || "";
+
+    // localStorage: запоминаем имя и телефон
+    try {
+      const savedName = localStorage.getItem("rfy_name");
+      const savedPhone = localStorage.getItem("rfy_phone");
+      if (savedName) modal.querySelector("#booking-name").value = savedName;
+      if (savedPhone) phoneInput.value = savedPhone;
+
+      modal
+        .querySelector("#booking-name")
+        ?.addEventListener("input", (e) => localStorage.setItem("rfy_name", e.target.value || ""));
+      phoneInput?.addEventListener("input", (e) =>
+        localStorage.setItem("rfy_phone", e.target.value || "")
+      );
+    } catch (_) {}
+
+    const lockScroll = () => (document.body.style.overflow = "hidden");
+    const unlockScroll = () => (document.body.style.overflow = "");
+
+    const setFeedback = (msg, type) => {
+      if (!feedback) return;
+      feedback.textContent = msg || "";
+      feedback.classList.toggle("is-success", type === "success");
+      feedback.classList.toggle("is-error", type === "error");
+      feedback.toggleAttribute("hidden", !msg);
+    };
+
+    const open = (dataset = {}) => {
+      modal.setAttribute("data-open", "true");
+      modal.setAttribute("aria-hidden", "false");
+      lockScroll();
+
+      // подстановка из dataset
+      const { program, master } = dataset;
+      if (program && programSelect) programSelect.value = program;
+      if (master && masterSelect) masterSelect.value = master;
+
+      // фокус
+      requestAnimationFrame(() => firstField?.focus());
+
+      // чистим #hash
+      if (location.hash === "#booking") {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+    };
+
+    const close = () => {
+      modal.setAttribute("data-open", "false");
+      modal.setAttribute("aria-hidden", "true");
+      unlockScroll();
+      setFeedback("", "");
+      form instanceof HTMLFormElement && form.reset();
+    };
+
+    triggers.forEach((t) =>
+      t.addEventListener("click", (e) => {
+        e.preventDefault();
+        open(t.dataset);
+      })
+    );
+    closeBtns.forEach((b) => b.addEventListener("click", close));
+    backdrop?.addEventListener("click", close);
+    document.addEventListener(
+      "keydown",
+      (e) => e.key === "Escape" && modal.getAttribute("data-open") === "true" && close()
+    );
+
+    if (location.hash === "#booking") open();
+
+    // Небольшая маска/нормализация телефона
+    function normalizePhone(raw) {
+      const d = String(raw || "").replace(/\D/g, "");
+      if (!d) return "";
+      if (d.length === 10)
+        return (
+          "+7 (" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6, 8) + "-" + d.slice(8, 10)
+        );
+      if (d.length >= 11)
+        return (
+          "+7 (" + d.slice(1, 4) + ") " + d.slice(4, 7) + "-" + d.slice(7, 9) + "-" + d.slice(9, 11)
+        );
+      return raw;
+    }
+    phoneInput?.addEventListener(
+      "blur",
+      () => (phoneInput.value = normalizePhone(phoneInput.value))
+    );
+
+    // Отправка в Pipedream
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!(form instanceof HTMLFormElement)) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      // honeypot
+      if (payload.company) return;
+
+      if (
+        !payload.name ||
+        !payload.phone ||
+        !payload.selected_program ||
+        !payload.date ||
+        !payload.time
+      ) {
+        setFeedback("Заполните имя, телефон, программу, дату и время.", "error");
+        return;
+      }
+
+      try {
+        submitBtn.setAttribute("disabled", "true");
+        submitBtn.textContent = "Отправляем…";
+        setFeedback("", "");
+
+        // антибот-задержка
+        await new Promise((r) => setTimeout(r, 400 + Math.random() * 300));
+
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: payload.name,
+            phone: payload.phone,
+            program: payload.selected_program,
+            date: payload.date,
+            time: payload.time,
+            master: payload.selected_master || "",
+            message: payload.message || "",
+            channel: "Сайт Relax For You",
+            site: location.hostname,
+          }),
+        });
+
+        if (res.ok) {
+          setFeedback(
+            "✨ Заявка отправлена. Менеджер свяжется с вами в ближайшее время.",
+            "success"
+          );
+          form.reset();
+          setTimeout(close, 2400);
+        } else {
+          setFeedback("⚠️ Ошибка при отправке. Попробуйте позже.", "error");
+        }
+      } catch (err) {
+        console.error(err);
+        setFeedback("❌ Ошибка соединения. Проверьте интернет.", "error");
+      } finally {
+        submitBtn.removeAttribute("disabled");
+        submitBtn.textContent = defaultSubmitText;
+      }
+    });
+  })();
+</script>

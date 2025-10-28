@@ -1,0 +1,147 @@
+/* Используем глобальные токены из styles/variables.css */
+
+/* ===== БАЗА ===== */
+.rfy-btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--text-primary);
+  --btn-br: 10px;
+  --btn-bc: #ff4fa7; /* fallback */
+  --btn-shadow: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-width: 0;
+  border-radius: var(--btn-br);
+  border: 1px solid var(--btn-bc);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+
+  text-decoration: none;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  user-select: none;
+  cursor: pointer;
+
+  transition:
+    transform 0.12s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@supports (color: color-mix(in oklab, white, black)) {
+  .rfy-btn {
+    --btn-bc: color-mix(in oklab, var(--rose-hot) 80%, var(--neon-pink) 20%);
+  }
+}
+
+.rfy-btn__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.rfy-btn__label {
+  white-space: nowrap;
+}
+
+/* ===== РАЗМЕРЫ ===== */
+.rfy-sm {
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+.rfy-md {
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+}
+.rfy-lg {
+  padding: 16px 26px;
+  font-size: 1.05rem;
+  border-radius: 12px;
+}
+
+/* Полная ширина */
+.rfy-full {
+  width: 100%;
+  display: inline-flex;
+}
+
+/* ===== ВАРИАНТЫ ===== */
+.rfy-outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--text-primary);
+}
+.rfy-outline:active:not(.is-disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.rfy-primary {
+  --btn-bg: var(--g-desire);
+  --btn-fg: #fff;
+  --btn-bc: transparent;
+  --btn-shadow: var(--shadow-rose);
+  box-shadow: var(--btn-shadow);
+}
+.rfy-primary:hover:not(.is-disabled) {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+.rfy-primary:active:not(.is-disabled) {
+  filter: brightness(0.98);
+  transform: translateY(0) scale(0.99);
+}
+
+.rfy-ghost {
+  --btn-bg: rgba(255, 255, 255, 0.05);
+  --btn-fg: var(--text-primary);
+  --btn-bc: rgba(255, 255, 255, 0.1);
+}
+.rfy-ghost:hover:not(.is-disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+.rfy-ghost:active:not(.is-disabled) {
+  transform: scale(0.99);
+}
+
+/* Фокус */
+.rfy-btn:focus-visible {
+  outline: 2px solid #ff8fd1; /* fallback */
+  outline-offset: 3px;
+}
+@supports (color: color-mix(in oklab, white, black)) {
+  .rfy-btn:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--neon-pink) 60%, transparent);
+  }
+}
+
+/* Disabled / Loading */
+.is-disabled,
+.rfy-btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.rfy-btn[data-loading="true"] .rfy-btn__label::after {
+  content: "…";
+  margin-left: 4px;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .rfy-btn {
+    transition: none !important;
+  }
+}
+
+/* Адаптация */
+@media (max-width: 420px) {
+  .rfy-lg {
+    padding: 14px 22px;
+    font-size: 1rem;
+  }
+}

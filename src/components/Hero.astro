@@ -1,0 +1,192 @@
+---
+import Button from "@/components/Button.astro";
+import "@/styles/hero.css";
+---
+
+<section id="hero" class="hero">
+  <div class="glow" aria-hidden="true"></div>
+
+  <!-- 🔥 Видеофон с адаптацией под мобильные -->
+  <video
+    id="bgVideo"
+    class="bg"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+    poster="/placeholder-hero.jpg"
+  >
+    <!-- Mobile -->
+    <source src="/video-bg-mobile.webm" type="video/webm" media="(max-width: 900px)" />
+    <source src="/video-bg-mobile.mp4" type="video/mp4" media="(max-width: 900px)" />
+
+    <!-- Desktop -->
+    <source src="/video-bg-desktop.webm" type="video/webm" media="(min-width: 901px)" />
+    <source src="/video-bg-desktop.mp4" type="video/mp4" media="(min-width: 901px)" />
+
+    Ваш браузер не поддерживает видеофон.
+  </video>
+
+  <div class="overlay" aria-hidden="true"></div>
+
+  <div class="container inner text-center">
+    <div class="logo-wrap reveal" style="--d:.05s">
+      <img
+        src="/relax-for-you.png"
+        alt="Relax For You"
+        width="220"
+        height="auto"
+        class="hero-logo"
+        loading="lazy"
+      />
+    </div>
+
+    <h1 class="hero-title reveal" style="--d:.10s">
+      Сеть премиальных салонов <br /> МАССАЖА и СПА-УСЛУГ
+    </h1>
+
+    <p class="hero-subtitle reveal" style="--d:.18s">
+      Самый лучший массаж в городе Мурманск!<br />
+    </p>
+
+    <p class="hero-slogan-box reveal" style="--d:.26s">
+      Откройте для себя мир эстетики и удовольствия!
+    </p>
+
+    <div class="hero-buttons reveal" style="--d:.34s">
+      <Button text="Онлайн-запись" href="#booking" />
+      <Button text="Связаться" href="tel:+79533025946" />
+      <Button text="Подробнее" href="#about" />
+    </div>
+
+    <!-- 🌸 Соцсети -->
+    <div class="hero-socials reveal" style="--d:.46s">
+      <a
+        href="https://vk.com/massagerelax51"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="ВКонтакте"
+      >
+        <div class="icon-wrap">
+          <!-- VK icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12.69 17.98c-5.33 0-8.28-3.67-8.41-9.83h2.67c.09 4.49 2.06 6.42 3.63 6.81V8.15h2.5v3.89c1.45-.16 2.97-1.82 3.49-3.89h2.5a8.1 8.1 0 0 1-1.09 2.83 7.8 7.8 0 0 1-2.02 2.19 8.23 8.23 0 0 1 2.47 2.07c.76.92 1.31 2.03 1.57 3.27h-2.73a4.88 4.88 0 0 0-1.31-2.44 3.9 3.9 0 0 0-2.5-1.08v3.52Z"
+            ></path>
+          </svg>
+          <span>ВКонтакте</span>
+        </div>
+      </a>
+
+      <a
+        href="https://t.me/relaxmassage51"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Telegram"
+      >
+        <div class="icon-wrap">
+          <!-- Telegram icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path
+              d="M9.999 15.2L9.7 19c.4 0 .6-.2.8-.4l2-1.9 4.1 3c.7.4 1.2.2 1.4-.7l2.6-12.2c.2-1-.3-1.4-1.1-1.1L3.3 10.6c-1 .4-1 1 .2 1.4l4.5 1.4 10.5-6.6-8.3 8.8Z"
+            ></path>
+          </svg>
+          <span>Telegram</span>
+        </div>
+      </a>
+
+      <a
+        href="https://wa.me/+79533025946"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="WhatsApp"
+      >
+        <div class="icon-wrap">
+          <!-- WhatsApp icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path
+              d="M16.6 13.9c-.2-.1-1.2-.6-1.4-.7-.2 0-.3-.1-.4.1l-.6.7c-.1.1-.2.1-.3 0a6.3 6.3 0 0 1-2.6-2.2c-.1-.1 0-.2 0-.3l.5-.5c.1-.2 0-.3 0-.4l-.7-1.6a.3.3 0 0 0-.4 0 2.6 2.6 0 0 0-.9.7c-.2.2-.3.4-.3.7 0 .4.1.8.4 1.3a7.3 7.3 0 0 0 3.1 3.2 7.5 7.5 0 0 0 1.5.6c.4.1.8.1 1.1.1.3 0 .6-.1.8-.4.3-.3.5-.5.6-.8v-.3c0-.2 0-.3-.1-.3Z"
+            ></path>
+            <path d="M20 12a8 8 0 0 1-11.3 7.3L4 20l.7-4.7A8 8 0 1 1 20 12Z"></path>
+          </svg>
+          <span>WhatsApp</span>
+        </div>
+      </a>
+
+      <a
+        href="viber://chat?number=%2B79533025946"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Viber"
+      >
+        <div class="icon-wrap">
+          <!-- Viber icon -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path
+              fill="#7360F2"
+              d="M4.3 2.8h15.4c.9 0 1.6.7 1.6 1.6v10.5c0 .9-.7 1.6-1.6 1.6H8l-4 4v-4H4c-.9 0-1.6-.7-1.6-1.6V4.4c0-.9.7-1.6 1.6-1.6Z"
+            ></path>
+            <path
+              d="M9.8 7.9c-.3.2-.5.5-.6.8-.1.4 0 .8.2 1.2a6.2 6.2 0 0 0 2.8 3c.4.2.8.2 1.2.1.3-.1.6-.3.8-.6l.2-.2a.4.4 0 0 0-.2-.5l-1.2-.6a.3.3 0 0 0-.3 0l-.3.3c-.1.1-.2.1-.3 0a4.4 4.4 0 0 1-1.5-1.5c-.1-.1 0-.2.1-.3l.2-.2a.4.4 0 0 0 0-.4l-.6-1.2a.4.4 0 0 0-.5-.2Z"
+            ></path>
+          </svg>
+          <span>Viber</span>
+        </div>
+      </a>
+
+      <a
+        href="https://www.instagram.com/irina.mur_/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Instagram"
+      >
+        <div class="icon-wrap">
+          <!-- Instagram icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="3.5"></circle>
+            <circle cx="17" cy="7" r="0.8" fill="currentColor"></circle>
+          </svg>
+          <span>Instagram</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <noscript>
+    <style>
+      #bgVideo {
+        display: none;
+      }
+    </style>
+  </noscript>
+
+  <script is:inline>
+    (function () {
+      var v = document.getElementById("bgVideo");
+      if (!v) return;
+      v.muted = true;
+      v.playsInline = true;
+
+      function ready() {
+        v.classList.add("is-ready");
+        var p = v.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      }
+
+      if (v.readyState >= 3) ready();
+      else {
+        v.addEventListener("canplay", ready, { once: true });
+        setTimeout(() => !v.classList.contains("is-ready") && ready(), 1200);
+      }
+
+      v.addEventListener("ended", () => {
+        try {
+          v.currentTime = 0;
+          v.play();
+        } catch {}
+      });
+    })();
+  </script>
+</section>

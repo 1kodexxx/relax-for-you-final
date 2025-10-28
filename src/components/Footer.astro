@@ -1,0 +1,247 @@
+<footer class="site-footer">
+  <div class="site-footer__container">
+    <!-- Верх футера -->
+    <section class="site-footer__top">
+      <div class="footer-col brand-col">
+        <a href="/#hero" class="brand">
+          <span class="brand-text">Relax For You</span>
+        </a>
+        <p class="brand-desc">
+          Атмосфера чувственного релакса, премиальные SPA-программы и полное восстановление
+          внутреннего баланса.
+        </p>
+      </div>
+
+      <div class="footer-col links-col">
+        <h3 class="footer-title">Навигация</h3>
+        <ul class="footer-links">
+          <li><a href="/#about">О нас</a></li>
+          <li><a href="/#masters">Мастера</a></li>
+          <li><a href="/#price">Прайс</a></li>
+          <li><a href="/#vacancies">Вакансии</a></li>
+          <li><a href="/#reviews">Отзывы</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col contacts-col">
+        <h3 class="footer-title">Контакты</h3>
+        <ul class="footer-contacts">
+          <li><a href="tel:+79533025946">+7 (953) 302-59-46</a></li>
+          <li>
+            <a href="https://wa.me/79113322917" target="_blank" rel="noopener">WhatsApp</a>
+          </li>
+          <li><a href="https://t.me/Relax4YOU51" target="_blank" rel="noopener">Telegram</a></li>
+          <li>г. Мурманск, ул. Трудовых резервов 9</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="footer-line" aria-hidden="true"></div>
+
+    <!-- Низ футера -->
+    <section class="site-footer__bottom">
+      <p class="copy">© 2025 Relax For You. Все права защищены.</p>
+      <nav class="site-footer__legal" aria-label="Правовая информация">
+        <a href="/terms">Конфиденциальность</a>
+        <span aria-hidden="true">•</span>
+        <a href="/terms">Условия оказания услуг</a>
+      </nav>
+    </section>
+  </div>
+</footer>
+
+<style>
+  /* === База === */
+  .site-footer {
+    padding: 64px 0 36px;
+    background: radial-gradient(60% 80% at 50% 100%, rgba(255, 79, 167, 0.05), rgba(0, 0, 0, 0.8));
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary, #c9c1c7);
+    font-size: 0.95rem;
+  }
+
+  /* Контейнер: явный max-width и горизонтальные паддинги, чтобы низ не «уезжал» к краям */
+  .site-footer__container {
+    max-width: var(--container, 1200px);
+    margin-inline: auto;
+    padding-block: 0;
+    padding-inline: 16px; /* важно для внутренних отступов */
+  }
+
+  /* Верх */
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 40px 32px;
+    padding-block: 48px 24px;
+  }
+  .brand-col {
+    grid-column: span 4;
+  }
+  .links-col {
+    grid-column: span 4;
+  }
+  .contacts-col {
+    grid-column: span 2;
+  }
+  .social-col {
+    grid-column: span 2;
+  }
+
+  @media (max-width: 1100px) {
+    .brand-col {
+      grid-column: span 6;
+    }
+    .links-col {
+      grid-column: span 3;
+    }
+    .contacts-col {
+      grid-column: span 3;
+    }
+    .social-col {
+      grid-column: span 6;
+    }
+  }
+  @media (max-width: 700px) {
+    .site-footer__top {
+      grid-template-columns: 1fr;
+    }
+    .brand-col,
+    .links-col,
+    .contacts-col,
+    .social-col {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--text-primary, #fff);
+    text-decoration: none;
+  }
+  .brand .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--rose-hot, #ff4fa7);
+    box-shadow: 0 0 18px rgba(255, 91, 191, 0.75);
+  }
+  .brand-desc {
+    max-width: 320px;
+    color: var(--text-dim, #a89ea5);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .footer-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .footer-links,
+  .footer-contacts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+  .footer-links a,
+  .footer-contacts a {
+    color: var(--text-secondary, #c9c1c7);
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+  .footer-links a:hover,
+  .footer-contacts a:hover {
+    color: #fff;
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .soc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.3s ease,
+      background 0.3s ease;
+  }
+  .soc:hover {
+    background: linear-gradient(135deg, var(--rose-hot, #ff4fa7), var(--neon-pink, #ff5bbf));
+    box-shadow: 0 0 18px rgba(255, 79, 167, 0.45);
+    transform: translateY(-3px);
+  }
+
+  .footer-line {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 16px 0 14px;
+  }
+
+  /* Низ: фикс «разлёта» */
+  .site-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* по краям внутри контейнера */
+    gap: 12px;
+    flex-wrap: wrap; /* чтобы аккуратно переносилось на малых экранах */
+    padding-block: 10px 22px;
+    color: var(--text-dim, #9b929a);
+    font-size: 0.88rem;
+  }
+
+  /* Важный фикс: элементы не растягиваются, сохраняют свои размеры */
+  .site-footer__bottom > * {
+    flex: 0 0 auto;
+  }
+
+  .site-footer__legal {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .site-footer__legal a {
+    color: var(--text-secondary, #c9c1c7);
+    text-decoration: none;
+  }
+  .site-footer__legal a:hover {
+    color: #fff;
+  }
+
+  .copy {
+    margin: 0;
+  }
+
+  @media (max-width: 700px) {
+    .site-footer__bottom {
+      justify-content: center;
+      text-align: center;
+    }
+    .site-footer__legal {
+      justify-content: center;
+    }
+  }
+</style>

@@ -1,0 +1,192 @@
+---
+import "@/styles/preloader.css";
+---
+
+<div id="rfy-preloader" class="rfy-preloader" aria-live="polite" aria-busy="true" role="status">
+  <div class="rfy-preloader__inner">
+    <div class="rfy-spinner" aria-hidden="true">
+      <span class="ring ring-1"></span>
+      <span class="ring ring-2"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="rfy-preloader__text">
+      <strong>Relax For You</strong>
+      <span class="sub">Загрузка атмосферы студии…</span>
+      <span class="hint">Лучший опыт — мы дождемся фото и видео.</span>
+    </div>
+    <div class="rfy-preloader__bar" aria-hidden="true">
+      <span class="bar"></span>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  /* Лёгкий, «неблокирующий» прелоадер с жёсткими таймаутами и фоллбэками под iOS/Safari */
+  (function () {
+    var doc = document,
+      root = doc.documentElement;
+    var $pre = doc.getElementById("rfy-preloader");
+    if (!$pre) return;
+
+    // НИКОГДА не ставим overflow:hidden на <html> — это ломает Safari со sticky/fixed.
+    // Если нужно — кратковременно на body (и то не обязательно).
+    var bodyOverflowPrev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    var reduce = false;
+    try {
+      reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch (_) {}
+
+    var sleep = function (t) {
+      return new Promise(function (r) {
+        setTimeout(r, t);
+      });
+    };
+    var once = function (el, ev, opts) {
+      return new Promise(function (r) {
+        el.addEventListener(
+          ev,
+          function h() {
+            el.removeEventListener(ev, h);
+            r();
+          },
+          { passive: true, once: true }
+        );
+      });
+    };
+
+    var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+    var slow = !!(conn && /2g|3g/.test(conn.effectiveType || ""));
+
+    // Жёсткие верхние границы ожиданий (меньше прежних)
+    var TIMEOUT_IMG = slow ? 8000 : 5000;
+    var TIMEOUT_VIDEO = slow ? 9000 : 6000;
+    var HARD_CAP_ALL = slow ? 9000 : 6500; // максимум держим прелоадер столько
+
+    function waitWindowLoad() {
+      if (doc.readyState === "complete") return Promise.resolve();
+      return Promise.race([once(window, "load"), sleep(2000)]); // даже без load не держим дольше 2с
+    }
+
+    function waitFonts() {
+      if (!doc.fonts || typeof doc.fonts.ready === "undefined") return Promise.resolve();
+      return Promise.race([doc.fonts.ready, sleep(1500)]);
+    }
+
+    function waitImages() {
+      var imgs = Array.prototype.slice.call(doc.images || []);
+      if (!imgs.length) return Promise.resolve();
+      var per = function (img) {
+        return new Promise(function (res) {
+          if (img.complete && img.naturalWidth > 0) return res();
+          var done = function () {
+            res();
+          };
+          img.addEventListener("load", done, { once: true });
+          img.addEventListener("error", done, { once: true });
+          // старые браузеры — страхуем таймером
+          setTimeout(done, TIMEOUT_IMG);
+        });
+      };
+      return Promise.all(imgs.map(per));
+    }
+
+    function waitCssBackgrounds() {
+      // очень лёгкая версия: ищем url() только на первых ~200 узлах
+      var nodes = Array.prototype.slice.call(doc.querySelectorAll("*")).slice(0, 200);
+      var urls = [];
+      var re = /url\((['"]?)(.*?)\1\)/g;
+      for (var i = 0; i < nodes.length; i++) {
+        var bg = getComputedStyle(nodes[i]).backgroundImage;
+        if (!bg || bg === "none") continue;
+        var m;
+        while ((m = re.exec(bg))) {
+          if (m[2] && m[2].indexOf("data:") !== 0) urls.push(m[2]);
+        }
+      }
+      if (!urls.length) return Promise.resolve();
+      var per = function (u) {
+        return new Promise(function (res) {
+          var img = new Image();
+          var done = function () {
+            res();
+          };
+          img.onload = done;
+          img.onerror = done;
+          img.src = u;
+          setTimeout(done, TIMEOUT_IMG);
+        });
+      };
+      return Promise.all(urls.map(per));
+    }
+
+    function waitVideos() {
+      var vids = Array.prototype.slice.call(doc.querySelectorAll("video"));
+      if (!vids.length) return Promise.resolve();
+      var per = function (v) {
+        return new Promise(function (res) {
+          try {
+            v.muted = true;
+            v.playsInline = true;
+            v.play().catch(function () {});
+          } catch (_) {}
+          if (v.readyState >= 2) return res();
+          var done = function () {
+            res();
+          };
+          v.addEventListener("canplaythrough", done, { once: true });
+          v.addEventListener("loadeddata", done, { once: true });
+          v.addEventListener("playing", done, { once: true });
+          v.addEventListener("error", done, { once: true });
+          setTimeout(done, TIMEOUT_VIDEO);
+        });
+      };
+      return Promise.all(vids.map(per));
+    }
+
+    async function boot() {
+      // Стартуем ожидания параллельно, но с потолком HARD_CAP_ALL
+      var all = Promise.all([
+        waitWindowLoad(),
+        waitFonts(),
+        waitImages(),
+        waitCssBackgrounds(),
+        waitVideos(),
+      ]);
+      await Promise.race([all, sleep(HARD_CAP_ALL)]);
+      // Обязательная небольшая пауза — чтобы браузер дал первый paint
+      await sleep(reduce ? 80 : 180);
+
+      root.classList.add("rfy-ready");
+      document.dispatchEvent(new CustomEvent("rfy:ready"));
+
+      $pre.classList.add("is-done");
+      await sleep(reduce ? 120 : 260);
+      try {
+        $pre.remove();
+      } catch (_) {
+        $pre.parentNode && $pre.parentNode.removeChild($pre);
+      }
+      document.body.style.overflow = bodyOverflowPrev || "";
+    }
+
+    // Подстраховка: если что-то зависло — снимаем прелоадер по аварийному таймеру
+    setTimeout(function () {
+      if (!root.classList.contains("rfy-ready")) {
+        root.classList.add("rfy-ready");
+        try {
+          $pre.classList.add("is-done");
+        } catch (_) {}
+        setTimeout(function () {
+          try {
+            $pre.remove();
+          } catch (__) {}
+          document.body.style.overflow = bodyOverflowPrev || "";
+        }, 300);
+      }
+    }, HARD_CAP_ALL + 1200);
+
+    boot();
+  })();
+</script>

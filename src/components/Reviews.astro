@@ -1,0 +1,328 @@
+---
+/* @ts-nocheck */
+import "@/styles/reviews.css";
+
+/** @typedef {{ id:string; name:string; date:string; rating:number; source:string; text:string; photos?: string[] }} Review */
+
+const REVIEWS = [
+  {
+    id: "r1",
+    name: "Ирина В.",
+    date: "2025-07-08",
+    rating: 5,
+    source: "google",
+    text: "Очень нежная, продуманная до деталей атмосфера: приглушённый свет, тёплые полотенца, тонкий аромат масел. Мастер Алекса вначале спросила про самочувствие и привычки, настроила давление под мои ощущения и дала рекомендации для шеи. Вышла как после отпуска — лёгкость и ясная голова.",
+  },
+  {
+    id: "r2",
+    name: "Михаил Р.",
+    date: "2025-07-14",
+    rating: 4.9,
+    source: "whatsapp",
+    text: "Записался спонтанно после тяжёлой недели. Крис работает технично, с чувством анатомии — мышцы словно «расклеились». Понравилась тактичная коммуникация и отсутствие навязанных услуг. Чай после процедуры — приятная точка в премиальном сервисе.",
+  },
+  {
+    id: "r3",
+    name: "Елена Т.",
+    date: "2025-08-02",
+    rating: 5,
+    source: "yandex",
+    text: "Первое посещение и сразу «вау». Lomi-Lomi у Жасмин — плавные, обволакивающие движения, всё как ритуал: музыка, температура, дыхание. Ушла тревожность, сон улучшился. Хочу абонемент, чтобы закрепить эффект.",
+  },
+  {
+    id: "r4",
+    name: "Антон С.",
+    date: "2025-08-15",
+    rating: 5,
+    source: "telegram",
+    text: "Минималистичный интерьер, идеальная чистота и приветливые администраторы. Массаж у Криса — тот самый баланс силы и деликатности. Особая благодарность за работу с шейным отделом: ушли зажимы, перестали болеть глаза к вечеру.",
+  },
+  {
+    id: "r5",
+    name: "Мария Д.",
+    date: "2025-09-03",
+    rating: 5,
+    source: "google",
+    text: "Эля очень чуткая: учитывает порог чувствительности, масло подогрето, движения связные. В конце показала пару упражнений для осанки. Пространство спокойное, в пастельных тонах — хочется возвращаться за состоянием безопасности и заботы.",
+  },
+  {
+    id: "r6",
+    name: "Влад К.",
+    date: "2025-09-22",
+    rating: 5,
+    source: "whatsapp",
+    text: "Хожу на спортивный раз в две недели. Нравится стабильность качества: разогрев, глубокая проработка, аккуратная работа с триггерными точками — без синяков. Детали на уровне: вода, одноразовая косметика, чистота. Это уровень.",
+  },
+  {
+    id: "r7",
+    name: "Александра П.",
+    date: "2025-10-01",
+    rating: 5,
+    source: "yandex",
+    text: "Сервис как в хорошем бутик-отеле: обращаются по имени, учитывают пожелания по музыке и температуре. Процедура «Анти-стресс» — идеальна после компьютера. Администратор заранее напомнил о записи и подсказал, как лучше добраться.",
+  },
+  {
+    id: "r8",
+    name: "Дмитрий Л.",
+    date: "2025-10-10",
+    rating: 4.9,
+    source: "google",
+    text: "Искал место, где можно качественно «переключиться». Ляля грамотно чередует глубокие и поверхностные техники, снимая нагрузку без боли. Масло комфортной температуры, кабинет прогрет — мелочи, которые дают большой вклад в релакс.",
+  },
+  {
+    id: "r9",
+    name: "Карина С.",
+    date: "2025-10-14",
+    rating: 5,
+    source: "telegram",
+    text: "Философия расслабления чувствуется во всём: от приветствия до финального чая. Взяла «Deep Sensual» — музыка и ритм движений увели в состояние медитации. Очень уютно, красиво и по-настоящему бережно.",
+  },
+  {
+    id: "r10",
+    name: "Роман Е.",
+    date: "2025-10-15",
+    rating: 5,
+    source: "whatsapp",
+    text: "Ожидал просто хороший массаж, а получил системную работу с телом. Алекса аккуратно обошла старую травму плеча, помогла снять давнюю скованность. Уже записался на курс из четырёх встреч — хочу закрепить результат.",
+  },
+  {
+    id: "r11",
+    name: "Ольга М.",
+    date: "2025-10-18",
+    rating: 5,
+    source: "google",
+    text: "Понравилась консультация до начала: уточнили образ жизни, уровень стресса, пожелания по давлению. Жасмин объяснила, какие зоны перегружены, и дала домашние рекомендации. Спала после процедуры как ребёнок.",
+  },
+  {
+    id: "r12",
+    name: "Сергей П.",
+    date: "2025-10-19",
+    rating: 4.9,
+    source: "yandex",
+    text: "Крис ведёт как тренер: фиксируем проблемные зоны, отмечаем прогресс, корректируем шаг за шагом. За четыре визита ушла боль в пояснице после долгого вождения. Удобная локация и парковка — экономит время.",
+  },
+  {
+    id: "r13",
+    name: "Наталья К.",
+    date: "2025-10-20",
+    rating: 5,
+    source: "telegram",
+    text: "Чувствительная кожа — всегда переживаю. Эля подобрала гипоаллергенное масло, предупреждала каждый шаг. Лимфодренажная часть дала видимый эффект: лицо посвежело, ушёл отёк. Очень бережное отношение.",
+  },
+  {
+    id: "r14",
+    name: "Георгий А.",
+    date: "2025-10-21",
+    rating: 5,
+    source: "google",
+    text: "Контроль качества впечатляет: напоминания о записи, подготовленный кабинет, тёплый халат и вода после. Ляля отлично снимает напряжение с поясницы, которое копится от сидячей работы. Чувствуется школа и опыт.",
+  },
+  {
+    id: "r15",
+    name: "Кристина Л.",
+    date: "2025-10-22",
+    rating: 5,
+    source: "whatsapp",
+    text: "Лучший релакс в городе. Ароматы тонкие, без навязчивости, музыка поддерживает состояние, а не усыпляет. Администратор деликатный, без спешки. Спасибо команде — почувствовала, что обо мне действительно позаботились.",
+  },
+];
+
+const avg =
+  Math.round((REVIEWS.reduce((s, r) => s + (r.rating || 0), 0) / REVIEWS.length) * 10) / 10;
+
+function getPhotos(r) {
+  return r.photos || [];
+}
+---
+
+<section id="reviews" class="rv-hero" data-reveal-scope>
+  <div class="rv-hero__glow" aria-hidden="true"></div>
+
+  <div class="container rv-hero__inner" data-reveal-group data-stagger="120">
+    <h1 class="rv-title" data-reveal-item>Отзывы клиентов</h1>
+    <p class="rv-subtitle" data-reveal-item>
+      Реальные впечатления гостей студии — сервис, атмосфера и результат.
+    </p>
+
+    <div
+      class="rv-agg"
+      itemprop="aggregateRating"
+      itemscope
+      itemtype="https://schema.org/AggregateRating"
+      data-reveal-item
+    >
+      <meta itemprop="ratingValue" content={String(avg)} />
+      <meta itemprop="reviewCount" content={String(REVIEWS.length)} />
+      <div class="rv-score">
+        <strong>{avg}</strong><span>/5</span>
+        <span class="rv-muted">({REVIEWS.length})</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rv-list">
+  <div class="container rv-grid" id="rvGrid" data-reveal-group data-stagger="100">
+    {
+      REVIEWS.map((r) => (
+        <article
+          class="rv-card"
+          data-reveal-item
+          tabindex="0"
+          data-source={r.source}
+          data-rating={r.rating}
+          data-date={r.date}
+          itemscope
+          itemtype="https://schema.org/Review"
+        >
+          <div class="rv-card__head">
+            <div class="rv-avatar" aria-hidden="true" data-initial={r.name.trim()[0]} />
+            <div class="rv-meta">
+              <div class="rv-name" itemprop="author">
+                {r.name}
+              </div>
+              <time class="rv-date rv-muted" datetime={r.date}>
+                {new Date(r.date).toLocaleDateString("ru-RU")}
+              </time>
+
+              {/* ⭐ Блок рейтинга */}
+              <div class="rv-stars" aria-label={`Оценка ${r.rating} из 5`}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill={i <= Math.round(r.rating) ? "#FFD700" : "rgba(255,255,255,0.25)"}
+                    class="rv-star"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <p class="rv-text" itemprop="reviewBody">
+            {r.text}
+          </p>
+
+          {getPhotos(r).length > 0 && (
+            <div class="rv-photos">
+              {getPhotos(r).map((p) => (
+                <button class="rv-ph" data-src={p} aria-label="Открыть фото">
+                  <img loading="lazy" decoding="async" src={p} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<section class="rv-cta" data-reveal-group data-stagger="180">
+  <div class="container rv-cta__box" data-reveal-item>
+    <div class="rv-cta__text">
+      <h3>Поделитесь впечатлением</h3>
+      <p class="rv-muted">Нам важно каждое слово — мы читаем и отвечаем всем.</p>
+    </div>
+    <div class="rv-cta__actions" data-reveal-item>
+      <a
+        class="rv-btn-ghost"
+        href="https://vk.com/massage_murmansk51?from=groups&w=community-review-27680891"
+        target="_blank"
+        rel="noopener">Оставить отзыв</a
+      >
+      <a class="rv-btn-ghost" href="#contacts">Написать лично</a>
+    </div>
+  </div>
+</section>
+
+<div class="rv-lightbox" id="rvLightbox" hidden>
+  <button class="rv-lb-close" aria-label="Закрыть">×</button>
+  <img id="rvLbImg" alt="" />
+</div>
+
+<script is:inline>
+  (function () {
+    var grid = document.getElementById("rvGrid");
+    if (!grid) return;
+
+    // Hover/Press
+    function pressOn(el) {
+      el.classList.add("is-press");
+    }
+    function pressOff(el) {
+      el.classList.remove("is-press");
+    }
+
+    grid.addEventListener("mousedown", function (e) {
+      var card = e.target.closest ? e.target.closest(".rv-card") : null;
+      if (!card) return;
+      pressOn(card);
+      var up = function () {
+        pressOff(card);
+        window.removeEventListener("mouseup", up);
+      };
+      window.addEventListener("mouseup", up, { once: true });
+    });
+    grid.addEventListener(
+      "touchstart",
+      function (e) {
+        var card = e.target.closest ? e.target.closest(".rv-card") : null;
+        if (!card) return;
+        pressOn(card);
+        var off = function () {
+          pressOff(card);
+          window.removeEventListener("touchend", off);
+          window.removeEventListener("touchcancel", off);
+        };
+        window.addEventListener("touchend", off, { once: true });
+        window.addEventListener("touchcancel", off, { once: true });
+      },
+      { passive: true }
+    );
+    grid.addEventListener("keydown", function (e) {
+      var card = e.target.closest ? e.target.closest(".rv-card") : null;
+      if (!card) return;
+      if (e.key === "Enter" || e.key === " " || e.keyCode === 13 || e.keyCode === 32) {
+        e.preventDefault();
+        pressOn(card);
+        setTimeout(function () {
+          pressOff(card);
+        }, 150);
+      }
+    });
+
+    // Лайтбокс
+    var lb = document.getElementById("rvLightbox");
+    var lbImg = document.getElementById("rvLbImg");
+    grid.addEventListener("click", function (e) {
+      var ph = e.target.closest ? e.target.closest(".rv-ph") : null;
+      if (!ph) return;
+      var src =
+        ph.getAttribute("data-src") || (ph.querySelector("img") && ph.querySelector("img").src);
+      if (!src) return;
+      lbImg.src = src;
+      lb.hidden = false;
+      document.body.style.overflow = "hidden";
+    });
+    lb.addEventListener("click", function (e) {
+      if (
+        e.target.id === "rvLightbox" ||
+        (e.target.classList && e.target.classList.contains("rv-lb-close"))
+      ) {
+        lb.hidden = true;
+        document.body.style.overflow = "";
+      }
+    });
+
+    // Reveal on scroll — общий скрипт уже есть, но локально подстрахуемся:
+    if (!("IntersectionObserver" in window)) {
+      Array.prototype.forEach.call(document.querySelectorAll("[data-reveal-item]"), function (el) {
+        el.classList.add("in");
+      });
+    }
+  })();
+</script>

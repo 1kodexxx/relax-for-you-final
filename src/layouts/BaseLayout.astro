@@ -1,0 +1,188 @@
+---
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import Preloader from "@/components/Preloader.astro";
+import BookingModal from "@/components/BookingModal.astro";
+import SEO from "@/components/SEO.astro";
+
+import "@/styles/variables.css";
+import "@/styles/globals.css";
+import "@/styles/animations.css";
+
+const {
+  title = "Relax For You — Премиальные массажные салоны · Мурманск",
+  description = "Сенсуальная эстетика, сертифицированные мастера и онлайн-запись.",
+  image = "/assets/og-default.jpg",
+  page = "home",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru" data-page={page} class="no-js">
+  <head>
+    <!-- ⚙️ Основное -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0e0a0b" />
+
+    <!-- 🧭 SEO -->
+    <SEO title={title} description={description} image={image} />
+
+    <!-- 🖼️ Иконки -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- 🚀 Preload важного контента -->
+    <link rel="preload" as="image" href="/placeholder-hero.jpg" fetchpriority="high" />
+    <link rel="preload" as="video" href="/video-bg.mp4" type="video/mp4" fetchpriority="high" />
+    <link rel="preload" as="video" href="/video-bg.webm" type="video/webm" fetchpriority="high" />
+
+    <!-- 🧠 JS init -->
+    <script is:inline>
+      (function () {
+        var cl = document.documentElement.classList;
+        cl.remove("no-js");
+        cl.add("js");
+      })();
+    </script>
+
+    <!-- 🧩 Полифиллы для старых браузеров -->
+    <script is:inline>
+      (function () {
+        var E = Element.prototype;
+        if (!E.matches)
+          E.matches =
+            E.msMatchesSelector ||
+            E.webkitMatchesSelector ||
+            E.mozMatchesSelector ||
+            E.oMatchesSelector;
+        if (!E.closest)
+          E.closest = function (sel) {
+            var el = this;
+            while (el && el.nodeType === 1) {
+              if (el.matches(sel)) return el;
+              el = el.parentElement || el.parentNode;
+            }
+            return null;
+          };
+        if (!String.prototype.startsWith)
+          String.prototype.startsWith = function (s, i) {
+            return this.slice(i || 0, i + s.length) === s;
+          };
+        if (!String.prototype.padStart)
+          String.prototype.padStart = function (t, e) {
+            t = t >>> 0;
+            e = String(e || " ");
+            if (this.length >= t) return String(this);
+            var s = "";
+            var n = t - this.length;
+            while (s.length < n) s += e;
+            return s.slice(0, n) + String(this);
+          };
+      })();
+    </script>
+
+    <!-- ✨ Скролл-анимации -->
+    <script is:inline src="/scripts/scroll-animations.js"></script>
+
+    <!-- 🪄 Хук для стартового класса -->
+    <script is:inline>
+      window.addEventListener(
+        "load",
+        function () {
+          document.body.classList.add("show-masters");
+        },
+        { once: true }
+      );
+    </script>
+
+    <!-- 🎨 Исправления слоёв (iOS + Safari) -->
+    <style is:inline>
+      :root {
+        --z-header: 1000;
+        --z-drawer: 1100;
+        --z-preloader: 100000;
+      }
+      .site-header,
+      header.site-header {
+        position: sticky;
+        top: 0;
+        z-index: var(--z-header);
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      .mobile-nav,
+      .mobile-menu,
+      [data-mobile-drawer],
+      .nav-drawer {
+        position: fixed;
+        z-index: var(--z-drawer);
+      }
+      .mobile-backdrop,
+      .nav-backdrop,
+      [data-mobile-backdrop] {
+        position: fixed;
+        z-index: calc(var(--z-drawer) - 1);
+      }
+      .noise {
+        pointer-events: none;
+        z-index: 0 !important;
+      }
+
+      [data-page="terms"] .terms-hero,
+      [data-page="terms"] .terms-card {
+        position: static;
+        z-index: auto;
+        transform: none;
+        filter: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+      [data-page="terms"] header .mobile-menu,
+      [data-page="terms"] header .mobile-nav,
+      [data-page="terms"] header [data-mobile-drawer] {
+        position: fixed !important;
+        z-index: var(--z-drawer) !important;
+      }
+
+      /* no-JS fallback */
+      .no-js .reveal,
+      .no-js [data-reveal],
+      .no-js .fade-up,
+      .no-js [data-reveal-item] {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+    </style>
+
+    <noscript>
+      <style>
+        .reveal,
+        [data-reveal],
+        .fade-up,
+        [data-reveal-item] {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      </style>
+    </noscript>
+  </head>
+
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+
+    <Preloader />
+    <Header />
+    <main><slot /></main>
+    <Footer />
+    <BookingModal />
+  </body>
+</html>

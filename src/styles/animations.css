@@ -1,0 +1,187 @@
+/* ========= Reveal animations (global) ========= */
+
+/* Базовые переменные эффекта */
+.reveal,
+[data-reveal],
+.fade-up {
+  --d: 0s; /* индивидуальная задержка через style="--d:.2s" */
+  --dur: 0.75s; /* длительность */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 1;
+  transform: none;
+}
+
+/* Когда JS "вооружил" страницу — изначально скрываем анимируемые */
+.rfy-armed .reveal,
+.rfy-armed [data-reveal],
+.rfy-armed .fade-up {
+  opacity: 0;
+}
+
+/* Дефолт — мягкий подъём без блюра */
+.reveal.in,
+[data-reveal].in,
+.fade-up.in {
+  animation: rfy-lift var(--dur) var(--ease) var(--d) both;
+}
+@keyframes rfy-lift {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Направленные варианты */
+.reveal--up.in {
+  animation: rfy-slide-up var(--dur) var(--ease) var(--d) both;
+}
+.reveal--down.in {
+  animation: rfy-slide-down var(--dur) var(--ease) var(--d) both;
+}
+.reveal--left.in {
+  animation: rfy-slide-left var(--dur) var(--ease) var(--d) both;
+}
+.reveal--right.in {
+  animation: rfy-slide-right var(--dur) var(--ease) var(--d) both;
+}
+.reveal--scale.in {
+  animation: rfy-scale var(--dur) var(--ease) var(--d) both;
+}
+.reveal--flip.in {
+  animation: rfy-flip var(--dur) var(--ease) var(--d) both;
+}
+
+/* Кадры */
+@keyframes rfy-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rfy-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rfy-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rfy-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rfy-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes rfy-flip {
+  from {
+    opacity: 0;
+    transform: perspective(600px) rotateX(8deg) translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(600px) rotateX(0) translateY(0) scale(1);
+  }
+}
+
+/* Wipe через clip-path — с фолбэком */
+.rfy-armed .reveal--wipe {
+  /* fallback: просто мягкий сдвиг, если clip-path не поддерживается */
+  opacity: 0.01;
+  transform: translateY(6px);
+}
+@supports (clip-path: inset(0 0 0 0)) {
+  .rfy-armed .reveal--wipe {
+    clip-path: inset(20% 0 0 0 round 10px);
+  }
+  .reveal--wipe.in {
+    animation: rfy-wipe var(--dur) var(--ease) var(--d) both;
+  }
+  @keyframes rfy-wipe {
+    from {
+      opacity: 0.01;
+      clip-path: inset(20% 0 0 0 round 10px);
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0 round 10px);
+      transform: none;
+    }
+  }
+}
+
+/* ========= Группы со стаггером ========= */
+[data-reveal-group] [data-reveal-item] {
+  --dur: 0.75s;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 1;
+  transform: none;
+}
+.rfy-armed [data-reveal-group] [data-reveal-item] {
+  opacity: 0;
+  transform: translateY(22px) scale(0.985);
+}
+[data-reveal-group].in [data-reveal-item].in {
+  animation: rfy-stagger var(--dur) var(--ease) calc(var(--i, 0) * var(--stagger, 100ms)) both;
+}
+@keyframes rfy-stagger {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ========= Accessibility: уважение к настройке пользователя ========= */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  [data-reveal],
+  .fade-up,
+  [data-reveal-group] [data-reveal-item] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+}
+
+/* ========= Fallback: если JS/скрипт не подгрузился ========= */
+html:not(.rfy-armed) [data-reveal-item],
+html:not(.rfy-armed) .reveal,
+html:not(.rfy-armed) .fade-up {
+  opacity: 1 !important;
+  transform: none !important;
+}

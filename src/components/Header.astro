@@ -1,0 +1,276 @@
+---
+import Button from "@components/Button.astro";
+import "@/styles/header.css";
+---
+
+<!-- Прогресс-бар -->
+<div id="scrollProgress" class="rfy-header__progress" aria-hidden="true"></div>
+
+<header class="rfy-header" role="banner">
+  <div class="container rfy-header__container">
+    <div class="rfy-header__nav">
+      <!-- Логотип + название -->
+      <a href="/#hero" class="rfy-header__brand">
+        <img src="/logo.png" alt="RelaxForYou" class="rfy-header__logo" width="36" height="36" />
+        <span class="rfy-header__brand-text">By Эстетик SPA</span>
+      </a>
+
+      <!-- Меню (десктоп) -->
+      <nav class="rfy-header__menu" id="menu" aria-label="Основное меню">
+        <a href="/#about">О нас</a>
+        <a href="/#gallery">Галерея</a>
+        <a href="/#masters">Прайс</a>
+        <a href="/#vacancies">Вакансии</a>
+        <a href="/#reviews">Отзывы</a>
+        <div class="menu-underline" aria-hidden="true"></div>
+      </nav>
+
+      <!-- Справа: CTA (desktop) + бургер (mobile) -->
+      <div class="rfy-header__right">
+        <Button class="rfy-cta-desktop" text="Запись на массаж" href="#booking" compact />
+
+        <button
+          class="rfy-header__burger"
+          id="burger"
+          aria-label="Открыть меню"
+          aria-expanded="false"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Мобильное меню -->
+  <div class="rfy-header__backdrop" id="mmBackdrop" hidden></div>
+  <nav class="rfy-header__mobile" id="mobileMenu" aria-label="Мобильное меню" hidden>
+    <div class="rfy-header__mobile-inner">
+      <ul>
+        <li><a href="/#about">О нас</a></li>
+        <li><a href="/#gallery">Галерея</a></li>
+        <li><a href="/#masters">Прайс</a></li>
+        <li><a href="/#vacancies">Вакансии</a></li>
+        <li><a href="/#reviews">Отзывы</a></li>
+      </ul>
+      <div class="mobile-cta">
+        <Button text="Запись на массаж" href="#booking" full />
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script is:inline>
+  (() => {
+    /* ===== Прогресс-бар ===== */
+    const bar = document.getElementById("scrollProgress");
+    if (bar) {
+      let ticking = false;
+      const update = () => {
+        const doc = document.documentElement;
+        const max = Math.max(1, doc.scrollHeight - doc.clientHeight);
+        const p = Math.min(1, Math.max(0, (doc.scrollTop || 0) / max));
+        bar.style.setProperty("--p", p);
+        ticking = false;
+      };
+      const onScroll = () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      };
+      addEventListener("scroll", onScroll, { passive: true });
+      addEventListener("resize", update, { passive: true });
+      update();
+    }
+
+    /* ===== Утилиты ===== */
+    const getHash = (a) => {
+      try {
+        const url = new URL(a.getAttribute("href") || "", location.origin);
+        return (url.hash || "").replace("#", "");
+      } catch {
+        const raw = a.getAttribute("href") || "";
+        const i = raw.indexOf("#");
+        return i >= 0 ? raw.slice(i + 1) : "";
+      }
+    };
+
+    const html = document.documentElement;
+    const isHome = html.dataset.page === "home" || location.pathname === "/";
+    const menu = document.getElementById("menu");
+
+    /* ===== Активный пункт + подчёркивание ===== */
+    if (menu) {
+      const underline = menu.querySelector(".menu-underline");
+      const links = Array.from(menu.querySelectorAll("a")).filter((a) =>
+        (a.getAttribute("href") || "").includes("#")
+      );
+      const mobileAnchors = Array.from(document.querySelectorAll(".rfy-header__mobile a")).filter(
+        (a) => (a.getAttribute("href") || "").includes("#")
+      );
+
+      let activeLink = null;
+
+      const moveUnderline = (el) => {
+        if (!underline || !el) return;
+        const pr = menu.getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        underline.style.width = r.width + "px";
+        underline.style.transform = `translateX(${r.left - pr.left}px)`;
+        underline.setAttribute("data-visible", "1");
+      };
+
+      const hideUnderline = () => {
+        if (underline) underline.setAttribute("data-visible", "0");
+      };
+
+      const clearActive = () => {
+        links.forEach((a) => a.classList.remove("is-active"));
+        activeLink = null;
+        hideUnderline();
+      };
+
+      const setActiveById = (id) => {
+        if (!id) return;
+        let found = null;
+        for (const a of links) {
+          const match = getHash(a) === id;
+          a.classList.toggle("is-active", match);
+          if (match) found = a;
+        }
+        if (found) {
+          activeLink = found;
+          moveUnderline(activeLink);
+        }
+      };
+
+      links.forEach((a) => {
+        a.addEventListener("mouseenter", () => moveUnderline(a));
+        a.addEventListener("focus", () => moveUnderline(a));
+        const restore = () => (activeLink ? moveUnderline(activeLink) : hideUnderline());
+        a.addEventListener("mouseleave", restore);
+        a.addEventListener("blur", restore);
+        a.addEventListener("click", () => setTimeout(() => setActiveById(getHash(a)), 0));
+      });
+      mobileAnchors.forEach((a) => {
+        a.addEventListener("click", () => setTimeout(() => setActiveById(getHash(a)), 0));
+      });
+
+      /* ===== Внутренние страницы ===== */
+      function bootInner() {
+        const initial = (location.hash || "").replace("#", "");
+        if (initial) setActiveById(initial);
+        addEventListener("hashchange", () => setActiveById((location.hash || "").replace("#", "")));
+      }
+
+      /* ===== Главная ===== */
+      function initScrollSpy() {
+        const ids = links.map(getHash).filter(Boolean);
+        const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
+        const hero = document.getElementById("hero");
+
+        if (!sections.length) return false;
+
+        const setActive = (id) => setActiveById(id);
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            const vis = entries
+              .filter((e) => e.isIntersecting)
+              .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+            if (vis[0]) setActive(vis[0].target.id);
+          },
+          {
+            root: null,
+            rootMargin: "-45% 0px -45% 0px",
+            threshold: [0.01, 0.1, 0.25, 0.5, 0.75, 1],
+          }
+        );
+        sections.forEach((s) => io.observe(s));
+
+        const detect = () => {
+          // 👇 если мы у самого верха — снять подсветку
+          if (window.scrollY < 100 || (hero && hero.getBoundingClientRect().top > 20)) {
+            clearActive();
+            return;
+          }
+
+          const mid = innerHeight / 2;
+          let current = "";
+          for (const sec of sections) {
+            const r = sec.getBoundingClientRect();
+            if (r.top <= mid && r.bottom >= mid) {
+              current = sec.id;
+              break;
+            }
+          }
+          if (current) setActive(current);
+        };
+        addEventListener("scroll", detect, { passive: true });
+        addEventListener("resize", detect, { passive: true });
+
+        const initial = (location.hash || "").replace("#", "");
+        if (initial) setActive(initial);
+        else detect();
+
+        return true;
+      }
+
+      // Инициализация
+      if (isHome) {
+        const start = () => {
+          if (!initScrollSpy()) {
+            requestAnimationFrame(() => {
+              if (!initScrollSpy()) setTimeout(initScrollSpy, 0);
+            });
+          }
+        };
+        if (document.readyState === "complete" || document.readyState === "interactive") start();
+        else addEventListener("DOMContentLoaded", start, { once: true });
+      } else {
+        bootInner();
+      }
+    }
+
+    /* ===== Мобильное меню ===== */
+    const burger = document.getElementById("burger");
+    const mm = document.getElementById("mobileMenu");
+    const backdrop = document.getElementById("mmBackdrop");
+    const root = document.documentElement;
+    let open = false;
+
+    function setState(next) {
+      open = next;
+      burger?.setAttribute("aria-expanded", String(open));
+      burger?.classList.toggle("is-open", open);
+      if (mm) {
+        mm.hidden = !open;
+        mm.classList.toggle("open", open);
+      }
+      if (backdrop) {
+        backdrop.hidden = !open;
+        backdrop.classList.toggle("open", open);
+      }
+      root.style.overflow = open ? "hidden" : "";
+    }
+
+    burger?.addEventListener("click", () => setState(!open));
+    backdrop?.addEventListener("click", () => setState(false));
+    mm?.addEventListener("click", (e) => {
+      const a = e.target.closest("a");
+      if (a) setState(false);
+    });
+    addEventListener("keydown", (e) => {
+      if (open && e.key === "Escape") setState(false);
+    });
+
+    const mqDesktop = matchMedia("(min-width: 900px)");
+    const onBreakPoint = (e) => {
+      if (e.matches) setState(false);
+    };
+    mqDesktop.addEventListener?.("change", onBreakPoint);
+    mqDesktop.addListener?.(onBreakPoint); // Safari <16
+  })();
+</script>

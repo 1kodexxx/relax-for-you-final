@@ -1,0 +1,197 @@
+---
+import "@/styles/price.css";
+import { getCollection } from "astro:content";
+
+const massageEntries = await getCollection("massages");
+
+// === Утилита для получения пути изображения ===
+const pickMediaPath = (value: unknown) => {
+  if (!value) return undefined;
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if (typeof record.image === "string") return record.image;
+    if (typeof record.path === "string") return record.path;
+    if (typeof record.value === "string") return record.value;
+  }
+  return undefined;
+};
+
+// === Преобразуем все записи в единый массив услуг ===
+const services = massageEntries
+  .map((entry) => {
+    const data = entry.data;
+    return {
+      title: data.title as string,
+      duration: typeof data.duration === "string" ? data.duration : undefined,
+      price: Number(data.price),
+      desc: data.description as string,
+      img: pickMediaPath(data.image),
+      order: typeof data.order === "number" ? data.order : Number.MAX_SAFE_INTEGER,
+      highlight: Boolean(data.highlight),
+    };
+  })
+  .sort((a, b) => {
+    // 🔹 Сначала по цене (возрастание)
+    if (a.price !== b.price) return a.price - b.price;
+    // 🔹 Если цены равны — по order
+    if (a.order !== b.order) return a.order - b.order;
+    // 🔹 Если всё одинаково — по алфавиту
+    return a.title.localeCompare(b.title, "ru");
+  });
+
+const INITIAL_VISIBLE = 3;
+---
+
+<section id="price" class="price" data-initial-count={INITIAL_VISIBLE}>
+  <div class="container">
+    <header class="price-head">
+      <p class="eyebrow">Premium Relax For You</p>
+      <h2 class="title">Программы массажа</h2>
+      <p class="subtitle">
+        Премиальные ритуалы с ароматными маслами, свечами и мягкими прикосновениями. Выберите то,
+        что ближе вашему настроению.
+      </p>
+    </header>
+
+    <div class="price-grid">
+      {
+        services.map((service, index) => (
+          <article
+            class={"price-card" + (service.highlight ? " is-highlight" : "")}
+            data-price-card
+            hidden={index >= INITIAL_VISIBLE}
+            style={`--delay:${(index * 0.08).toFixed(2)}s;${index >= INITIAL_VISIBLE ? "display:none" : ""}`}
+          >
+            <div
+              class="price-card__media"
+              aria-hidden="true"
+              style={service.img ? `background-image:url('${service.img}')` : undefined}
+            />
+            <div class="price-card__body">
+              <div class="price-card__header">
+                <h3>{service.title}</h3>
+                <span class="price-card__price">{service.price.toLocaleString("ru-RU")} ₽</span>
+              </div>
+
+              {service.duration && <span class="price-card__duration">{service.duration}</span>}
+
+              <p class="price-card__desc">{service.desc}</p>
+
+              <div class="price-card__footer">
+                <a
+                  href="#booking"
+                  data-booking-trigger
+                  data-program={service.title}
+                  class="price-card__cta"
+                >
+                  Заказать
+                </a>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    {
+      services.length > INITIAL_VISIBLE && (
+        <div class="price-more">
+          <button class="gallery-more-button" data-show-more type="button">
+            Показать больше
+          </button>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const section = document.querySelector("#price");
+    if (!section) return;
+
+    const cards = Array.from(section.querySelectorAll("[data-price-card]"));
+    const showMoreBtn = section.querySelector("[data-show-more]");
+    const initialVisible = Number(section.getAttribute("data-initial-count") ?? "3");
+    let visibleCount = Math.min(initialVisible, cards.length);
+
+    // === Изначально показываем первые 3 карточки ===
+    cards.forEach((card, i) => {
+      if (i < visibleCount) {
+        card.hidden = false;
+        card.style.display = "";
+      } else {
+        card.hidden = true;
+        card.style.display = "none";
+      }
+    });
+
+    // === Кнопка "Показать больше" ===
+    if (showMoreBtn) {
+      const updateButton = () => {
+        if (visibleCount >= cards.length) {
+          showMoreBtn.parentElement?.remove();
+        }
+      };
+
+      updateButton();
+
+      showMoreBtn.addEventListener("click", () => {
+        const hiddenCards = cards.slice(visibleCount);
+        hiddenCards.forEach((card, idx) => {
+          card.hidden = false;
+          card.style.display = "";
+          card.style.animation = "none";
+          void card.offsetWidth; // рефреш
+          card.style.removeProperty("animation");
+        });
+        visibleCount = cards.length;
+        updateButton();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .price-more {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(36px, 6vw, 56px);
+  }
+
+  .gallery-more-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 42px;
+    border-radius: 999px;
+    border: 2px solid var(--rose-hot, #ff2b6a);
+    background: transparent;
+    color: #fff;
+    font-size: 1.02rem;
+    font-weight: 100;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 0.35s var(--e1),
+      border-color 0.35s var(--e1),
+      box-shadow 0.4s var(--e1),
+      transform 0.3s var(--e1),
+      background 0.4s var(--e1);
+    backdrop-filter: blur(12px);
+  }
+
+  .gallery-more-button:hover {
+    color: #fff;
+    border-color: color-mix(in oklab, var(--rose-hot) 70%, #ffffff 20%);
+    box-shadow:
+      0 0 22px rgba(255, 43, 106, 0.6),
+      0 10px 32px rgba(255, 43, 106, 0.25);
+    transform: translateY(-3px);
+    background: rgba(255, 43, 106, 0.08);
+  }
+</style>

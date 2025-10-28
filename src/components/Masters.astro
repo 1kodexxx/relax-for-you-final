@@ -1,0 +1,234 @@
+﻿---
+import Button from "@/components/Button.astro";
+import { getCollection } from "astro:content";
+import "@/styles/masters.css";
+
+const entries = await getCollection("masters");
+
+const pickPath = (value: unknown) => {
+  if (!value) return undefined;
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if (typeof record.image === "string") return record.image;
+    if (typeof record.path === "string") return record.path;
+    if (typeof record.value === "string") return record.value;
+  }
+  return undefined;
+};
+
+const normalizePhotos = (photo: unknown, gallery: unknown) => {
+  const items = Array.isArray(gallery) ? gallery : gallery ? [gallery] : [];
+  const galleryPaths = items.map((item) => pickPath(item)).filter(Boolean) as string[];
+  const all = [pickPath(photo), ...galleryPaths].filter(Boolean) as string[];
+  return Array.from(new Set(all));
+};
+
+const FALLBACK_PHOTO = "/assets/gallery/photo1.png";
+
+const formatRating = (value: unknown) => {
+  if (typeof value === "number") return value.toFixed(1);
+  if (typeof value === "string") return value;
+  return "5.0";
+};
+
+const masters = entries
+  .map(({ data, slug }) => {
+    const photos = normalizePhotos(data.photo, data.gallery);
+    const safePhotos = photos.length > 0 ? photos : [FALLBACK_PHOTO];
+    const order = typeof data.order === "number" ? data.order : Number.MAX_SAFE_INTEGER;
+
+    return {
+      id: slug,
+      name: data.name,
+      role: data.role,
+      exp: data.experience,
+      rating: formatRating(data.rating),
+      tags: data.tags ?? [],
+      photos: safePhotos,
+      description: data.description ?? "",
+      isFree: data.isFree ?? false,
+      order,
+    };
+  })
+  // 🟢 Новый приоритет сортировки:
+  .sort((a, b) => {
+    // 1️⃣ сначала "свободные" мастера
+    if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
+
+    // 2️⃣ затем по "order" (если задан)
+    if (a.order !== b.order) return a.order - b.order;
+
+    // 3️⃣ и в конце — по имени (алфавитно)
+    return a.name.localeCompare(b.name, "ru");
+  });
+
+const INITIAL_VISIBLE = 3;
+---
+
+<section id="masters" class="masters" data-initial-count={INITIAL_VISIBLE}>
+  <div class="container">
+    <header class="masters-head">
+      <p class="eyebrow">Премиальная команда Relax For You</p>
+      <h2 class="title">Мастера «Relax For You»</h2>
+      <p class="subtitle">
+        Сочетаем профессионализм, эстетику и эмоции. Выберите мастера, который отражает ваше
+        настроение.
+      </p>
+    </header>
+
+    <div class="masters-grid">
+      {
+        masters.map((m, index) => (
+          <article
+            class="master-card"
+            data-master-card
+            hidden={index >= INITIAL_VISIBLE}
+            style={`--delay:${(index * 0.08).toFixed(2)}s;${index >= INITIAL_VISIBLE ? "display:none" : ""}`}
+          >
+            <div class="card-media">
+              {m.photos.map((photo, index) => (
+                <img
+                  src={photo}
+                  alt={index === 0 ? `Мастер ${m.name}` : ""}
+                  loading="lazy"
+                  class={"card-media__img" + (index === 0 ? " is-active" : "")}
+                />
+              ))}
+
+              <div class="card-media__overlay">
+                <span class="badge badge-exp">{m.exp}</span>
+                <span class="badge badge-rating">
+                  <span aria-hidden="true">★</span>
+                  {m.rating}
+                </span>
+              </div>
+
+              {m.isFree && <span class="badge badge-free">Сейчас свободна</span>}
+
+              <div class="card-media__nav" aria-hidden="true">
+                <button class="nav prev" type="button" aria-label="Предыдущее фото" tabindex="-1">
+                  ‹
+                </button>
+                <button class="nav next" type="button" aria-label="Следующее фото" tabindex="-1">
+                  ›
+                </button>
+              </div>
+            </div>
+
+            <div class="master-card__body">
+              <div class="master-card__header">
+                <h3>{m.name}</h3>
+                <p class="role">{m.role}</p>
+              </div>
+
+              {m.tags.length > 0 && (
+                <ul class="master-card__tags">
+                  {m.tags.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
+              )}
+
+              {m.description && <p class="master-card__desc">{m.description}</p>}
+
+              <Button
+                text="Записаться"
+                href="#booking"
+                class="master-card__cta"
+                data-booking-trigger
+                data-master={m.name}
+              />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    {
+      masters.length > INITIAL_VISIBLE && (
+        <div class="masters-more">
+          <button class="gallery-more-button" data-show-more type="button">
+            Показать больше
+          </button>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const section = document.querySelector("#masters");
+    if (!section) return;
+
+    const cards = Array.from(section.querySelectorAll("[data-master-card]"));
+    const showMoreBtn = section.querySelector("[data-show-more]");
+    const initialVisible = Number(section.getAttribute("data-initial-count") ?? "3");
+    let visibleCount = Math.min(initialVisible, cards.length);
+
+    // === Показать только первые карточки ===
+    cards.forEach((card, i) => {
+      if (i < visibleCount) {
+        card.hidden = false;
+        card.style.display = "";
+      } else {
+        card.hidden = true;
+        card.style.display = "none";
+      }
+    });
+
+    // === Кнопка "Показать больше" ===
+    if (showMoreBtn) {
+      const updateButton = () => {
+        if (visibleCount >= cards.length) {
+          showMoreBtn.parentElement?.remove();
+        }
+      };
+
+      updateButton();
+
+      showMoreBtn.addEventListener("click", () => {
+        const hiddenCards = cards.slice(visibleCount);
+        hiddenCards.forEach((card, idx) => {
+          card.hidden = false;
+          card.style.display = ""; // 💡 Убираем display:none
+          card.style.animation = "none";
+          void card.offsetWidth; // перерисовка
+          card.style.removeProperty("animation");
+        });
+        visibleCount = cards.length;
+        updateButton();
+      });
+    }
+
+    // === Навигация фото в карточках ===
+    const masterCards = document.querySelectorAll(".master-card");
+
+    masterCards.forEach((card) => {
+      const images = card.querySelectorAll(".card-media__img");
+      const next = card.querySelector(".nav.next");
+      const prev = card.querySelector(".nav.prev");
+
+      if (images.length <= 1) return;
+
+      let index = 0;
+      const show = (i) => {
+        images.forEach((img, idx) => img.classList.toggle("is-active", idx === i));
+      };
+
+      const handleClick = (event, dir) => {
+        event.stopPropagation();
+        event.preventDefault();
+        index =
+          dir === "next"
+            ? (index + 1) % images.length
+            : (index - 1 + images.length) % images.length;
+        show(index);
+      };
+
+      next?.addEventListener("click", (e) => handleClick(e, "next"));
+      prev?.addEventListener("click", (e) => handleClick(e, "prev"));
+    });
+  })();
+</script>

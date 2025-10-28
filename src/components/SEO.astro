@@ -1,0 +1,75 @@
+---
+/**
+ * 🌐 SEO-компонент для проекта Relax For You
+ * Использование:
+ * <SEO title="..." description="..." image="/assets/og-image.jpg" url="..." />
+ */
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  keywords?: string;
+}
+
+const {
+  title = "Relax For You — Премиальные массажные салоны в Мурманске",
+  description = "Массаж и SPA-программы от сертифицированных мастеров. Эстетика, комфорт и полное расслабление. Онлайн-запись и подарочные сертификаты.",
+  image = "/assets/og-default.jpg",
+  url = "https://relaxmassage51.ru",
+  keywords = "массаж Мурманск, Relax For You, SPA, премиум массаж, салон красоты, релакс массаж, relaxmassage51, массажный салон Мурманск",
+} = Astro.props;
+---
+<!-- 🧭 Основные мета-теги -->
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="keywords" content={keywords} />
+<link rel="canonical" href={url} />
+
+<!-- ⚙️ Open Graph (для соцсетей, Telegram, VK) -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={image} />
+<meta property="og:site_name" content="Relax For You" />
+
+<!-- 🐦 Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+
+<!-- 🧩 JSON-LD разметка для Google -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Relax For You",
+    "image": "https://relaxmassage51.ru{image}",
+    "url": "https://relaxmassage51.ru",
+    "telephone": "+7-911-332-29-17",
+    "priceRange": "₽₽₽",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Ленинградская, 17",
+      "addressLocality": "Мурманск",
+      "addressCountry": "RU"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "12:00",
+      "closes": "00:00"
+    },
+    "sameAs": [
+      "https://t.me/Relax4YOU51",
+      "https://wa.me/79113322917"
+    ]
+  }
+</script>
+
+<!-- 🪩 Цветовая тема для поисковиков -->
+<meta name="theme-color" content="#0e0a0b" />
+<meta name="color-scheme" content="dark" />

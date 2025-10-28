@@ -1,0 +1,368 @@
+@import "./variables.css";
+
+/* === ОСНОВА === */
+.gallery {
+  position: relative;
+  padding: clamp(88px, 9vw, 140px) 0 clamp(112px, 11vw, 168px);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* === Контейнер по сетке Header === */
+.gallery .container {
+  width: min(100% - 32px, var(--container, 1200px));
+  margin-inline: auto;
+}
+
+/* === Заголовок === */
+.gallery-head {
+  text-align: center;
+  margin: 0 auto clamp(52px, 8vw, 88px);
+  max-width: 720px;
+  z-index: 1;
+}
+
+.gallery-head .eyebrow {
+  font-size: 0.82rem;
+  letter-spacing: 0.48em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.gallery-head .title {
+  margin: 12px 0 16px;
+  font-size: clamp(2.3rem, 5vw, 3.35rem);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+}
+
+.gallery-head .subtitle {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: rgba(255, 242, 250, 0.82);
+}
+
+/* === Сетка галереи === */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(22px, 3vw, 32px);
+  align-items: start;
+  justify-items: center;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.gallery-more {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(36px, 6vw, 56px);
+}
+
+.gallery-more-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 42px;
+  border-radius: 999px;
+  border: 2px solid var(--rose-hot, #ff2b6a);
+  background: transparent;
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 100;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.35s var(--e1),
+    border-color 0.35s var(--e1),
+    box-shadow 0.4s var(--e1),
+    transform 0.3s var(--e1),
+    background 0.4s var(--e1);
+  backdrop-filter: blur(12px);
+}
+
+/* При наведении — мягкое сияние */
+.gallery-more-button:hover,
+.gallery-more-button:focus-visible {
+  color: #fff;
+  border-color: color-mix(in oklab, var(--rose-hot) 70%, #ffffff 20%);
+  box-shadow:
+    0 0 22px rgba(255, 43, 106, 0.6),
+    0 10px 32px rgba(255, 43, 106, 0.25);
+  transform: translateY(-3px);
+  background: rgba(255, 43, 106, 0.08);
+}
+
+.gallery-more-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.32);
+  outline-offset: 4px;
+}
+
+.gallery-more-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 44px rgba(6, 0, 12, 0.4);
+}
+
+/* === Карточка изображения === */
+.gallery-card {
+  width: 100%;
+  max-width: 320px;
+  border-radius: clamp(18px, 3vw, 22px);
+  border: none;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+  font: inherit;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(42px) scale(0.94);
+  animation: gallery-pop 0.8s var(--e1) forwards;
+  animation-delay: var(--delay, 0s);
+  transition: transform 0.45s var(--e1);
+}
+
+.gallery-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: inherit;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 36px rgba(5, 0, 12, 0.28);
+  transition:
+    transform 0.6s var(--e1),
+    box-shadow 0.6s var(--e1);
+}
+
+.gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  transform: scale(1);
+  transition:
+    transform 0.6s var(--e1),
+    filter 0.6s var(--e1);
+}
+
+/* Hover эффекты */
+.gallery-card:hover .gallery-frame,
+.gallery-card:focus-visible .gallery-frame {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 28px 60px rgba(5, 0, 12, 0.36);
+}
+
+.gallery-card:hover img,
+.gallery-card:focus-visible img {
+  transform: scale(1.05);
+  filter: saturate(1.08) brightness(1.03);
+}
+
+.gallery-card:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.25);
+  outline-offset: 6px;
+}
+
+/* === ЛАЙТБОКС === */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(6, 0, 12, 0.86);
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+  isolation: isolate;
+  animation: fadeOut 0.45s ease forwards;
+}
+
+.lightbox[aria-hidden="false"] {
+  opacity: 1;
+  pointer-events: auto;
+  animation: fadeIn 0.45s ease forwards;
+}
+
+/* Диалог с центровкой */
+.lightbox-dialog {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: min(1040px, 92vw);
+  height: min(90vh, 820px);
+  background: linear-gradient(145deg, rgba(19, 5, 28, 0.95), rgba(8, 2, 16, 0.94));
+  border-radius: clamp(26px, 4vw, 36px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 48px 120px rgba(6, 0, 14, 0.65);
+  overflow: hidden;
+  transform: translateY(40px) scale(0.96);
+  opacity: 0;
+  transition:
+    transform 0.45s var(--e1),
+    opacity 0.45s var(--e1);
+}
+
+.lightbox[aria-hidden="false"] .lightbox-dialog {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Медиа внутри лайтбокса */
+.lightbox-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: clamp(20px, 4vw, 40px);
+}
+
+.lightbox-media img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 90%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: clamp(16px, 2vw, 24px);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* Кнопки управления */
+.lightbox-actions {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  padding: 0 clamp(8px, 2vw, 28px);
+}
+
+.lightbox-actions .nav {
+  pointer-events: auto;
+}
+
+.nav {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+  box-shadow: 0 22px 48px rgba(6, 0, 12, 0.4);
+}
+
+.nav:hover {
+  transform: scale(1.08);
+  background: rgba(81, 91, 212, 0.48);
+  border-color: rgba(81, 91, 212, 0.7);
+}
+
+/* Кнопка закрытия */
+.close-btn {
+  position: absolute;
+  top: clamp(16px, 3vw, 28px);
+  right: clamp(16px, 3vw, 28px);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(10, 0, 16, 0.55);
+  color: #fff;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease;
+  z-index: 2;
+}
+
+.close-btn:hover {
+  transform: scale(1.08);
+  background: rgba(221, 42, 123, 0.45);
+  border-color: rgba(221, 42, 123, 0.7);
+}
+
+/* === Адаптив === */
+@media (max-width: 1080px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 720px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .gallery-frame {
+    aspect-ratio: 4 / 5;
+  }
+  .gallery-more-button {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 28px;
+  }
+  .nav {
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+  }
+}
+
+/* === Анимации === */
+@keyframes gallery-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(42px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    background: rgba(6, 0, 12, 0);
+  }
+  to {
+    opacity: 1;
+    background: rgba(6, 0, 12, 0.86);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    background: rgba(6, 0, 12, 0.86);
+  }
+  to {
+    opacity: 0;
+    background: rgba(6, 0, 12, 0);
+  }
+}

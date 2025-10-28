@@ -1,0 +1,455 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const updated = "18 октября 2025";
+const title = "Правила и политика Relax For You";
+const description =
+  "Актуальные регламенты студии Relax For You: трудоустройство, правила посещения, конфиденциальность и условия оказания услуг.";
+---
+
+<BaseLayout page="terms" title={title} description={description}>
+  <main class="terms">
+    <section class="terms-hero" id="hero">
+      <div class="container">
+        <span class="terms-hero__tag">Документы и регламент</span>
+        <h1 class="terms-hero__title">Правила и политика Relax For You</h1>
+        <p class="terms-hero__subtitle">
+          Здесь собраны ключевые требования, контакты и дополнительные условия обслуживания студии.
+          Пожалуйста, ознакомьтесь с документом до посещения и сохраните контакты для связи.
+        </p>
+        <p class="terms-hero__date">
+          Обновлено: <time datetime="2025-10-18">{updated}</time>
+        </p>
+      </div>
+    </section>
+
+    <section class="terms-section" id="careers">
+      <div class="container terms-section__layout">
+        <div class="terms-section__head">
+          <h2>Вакансии и карьера</h2>
+          <p>
+            Связь с руководством по поводу трудоустройства осуществляется напрямую. Выберите удобный
+            способ и направьте краткую информацию о себе.
+          </p>
+        </div>
+        <div class="terms-cards terms-cards--two">
+          <article class="terms-card">
+            <h3>WhatsApp</h3>
+            <p>
+              <a
+                class="terms-link"
+                href="https://wa.me/79113322917"
+                target="_blank"
+                rel="noopener noreferrer">+7&nbsp;911&nbsp;332‑29‑17</a
+              >
+            </p>
+            <p class="terms-card__note">Ответ получает только руководство.</p>
+          </article>
+          <article class="terms-card">
+            <h3>Электронная почта</h3>
+            <p>
+              <a class="terms-link" href="mailto:milana.denisovna@list.ru"
+                >milana.denisovna@list.ru</a
+              >
+            </p>
+            <p class="terms-card__note">Укажите опыт, город и контактный номер.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="terms-section" id="service-status">
+      <div class="container terms-stack">
+        <div class="terms-block terms-block--accent">
+          <h2>Статус предоставления сервиса</h2>
+          <p>
+            Relax For You&nbsp;&mdash; приватная студия массажа и SPA. Услуги предоставляются по
+            предварительной записи и подтверждаются администрацией перед визитом. Мы гарантируем
+            высокий уровень сервиса, безопасность гостей и индивидуальный подход при подборе
+            программ.
+          </p>
+          <ul>
+            <li>Запись осуществляется через персонального администратора.</li>
+            <li>Подтверждение времени и выбранной программы обязательно.</li>
+            <li>Любые изменения согласовываются с руководством студии.</li>
+          </ul>
+        </div>
+        <div class="terms-block">
+          <h2>Правила оказания услуг</h2>
+          <ul>
+            <li>Услуги оказываются в соответствии с выбранной программой и регламентом студии.</li>
+            <li>Время работы мастера распределяется строго в рамках подтверждённого визита.</li>
+            <li>Все доп. пожелания обсуждаются заранее, чтобы обеспечить комфортные условия.</li>
+            <li>Студия оставляет за собой право отказать в обслуживании при нарушении правил.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="terms-section" id="studio-rules">
+      <div class="container terms-stack">
+        <div class="terms-block">
+          <h2>Правила посещения студии</h2>
+          <ul class="terms-list">
+            <li>Оплата производится до сеанса.</li>
+            <li>Запрещено посещение в алкогольном или ином опьянении.</li>
+            <li>Любой контакт с мастерами вне студии запрещён.</li>
+            <li>При входе в салон установлена камера внутреннего видеонаблюдения.</li>
+            <li>Каждый салон находится под охраной.</li>
+            <li>Торг запрещён.</li>
+            <li>Неуважительное обращение или отношение к мастерам недопустимо.</li>
+          </ul>
+        </div>
+        <aside class="terms-note">
+          <h3>Важно помнить</h3>
+          <p>
+            Выполнение этих правил позволяет нам сохранять безопасность и атмосферу доверия.
+            Невыполнение регламента приводит к отказу в обслуживании и дальнейшей записи.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="terms-section" id="contacts">
+      <div class="container terms-section__layout">
+        <div class="terms-section__head">
+          <h2>Контакты</h2>
+          <p>
+            Мы всегда на связи, чтобы помочь с подбором программы, записью или уточнением деталей.
+          </p>
+        </div>
+        <div class="terms-cards terms-cards--three">
+          <article class="terms-card">
+            <h3>Связаться с нами</h3>
+            <p>
+              Телефон и мессенджеры доступны в разделе программы или по запросу у администратора
+              студии. Пишите, чтобы подобрать лучшее предложение.
+            </p>
+          </article>
+          <article class="terms-card">
+            <h3>Для отзывов и предложений</h3>
+            <p>
+              Для отзывов и предложений от <strong>НАШИХ</strong> клиентов, мы предоставляем средство
+              связи с
+              <strong>НАМИ</strong>: почта
+              <a class="terms-link" href="mailto:relaxzone51@yandex.ru">relaxzone51@yandex.ru</a> с целью
+              ОБРАТНОЙ СВЯЗИ.
+            </p>
+          </article>
+          <article class="terms-card">
+            <h3>Экстренная связь</h3>
+            <p>
+              Внеплановые вопросы и уточнения решаются через руководителя студии по номеру
+              <a
+                class="terms-link"
+                href="https://wa.me/79009420757"
+                target="_blank"
+                rel="noopener noreferrer">WhatsApp +7&nbsp;900&nbsp;942‑07‑57</a
+              >.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="terms-section" id="privacy">
+      <div class="container terms-stack">
+        <div class="terms-block terms-block--glass">
+          <h2>Меры конфиденциальности и анонимности</h2>
+          <p>
+            Фото и данные исполнителей могли быть изменены, с целью безопасности и защиты
+            мастеров/исполнителей в сети. Мы уделяем особое внимание приватности гостей и
+            сотрудников.
+          </p>
+          <ul>
+            <li>Персональная информация гостей не передаётся третьим лицам.</li>
+            <li>Все внутренние процессы регулируются NDA и внутренним регламентом студии.</li>
+            <li>Видеонаблюдение используется исключительно для обеспечения безопасности.</li>
+          </ul>
+        </div>
+        <div class="terms-block terms-block--glass">
+          <h2>Условия оказания услуг</h2>
+          <p>
+            Условная «бесплатность» бара регламентируется выбранной программой и может не входить в
+            финальную стоимость услуги. Есть противопоказания, проконсультируйтесь со специалистом.
+          </p>
+          <ul>
+            <li>Все включения по напиткам оговариваются при подтверждении программы.</li>
+            <li>При наличии хронических заболеваний обязательно предупредите администратора.</li>
+            <li>Рекомендованы консультации с профильным врачом перед записью на процедуры.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <style>
+    .terms {
+      background:
+        radial-gradient(140% 120% at 50% 0%, rgba(255, 79, 167, 0.05), transparent 60%),
+        var(--g-velvet, linear-gradient(180deg, #0e0a0b, #1a1217));
+      padding-bottom: 72px;
+    }
+
+    .terms .container {
+      width: calc(100% - 32px);
+      max-width: var(--container, 1120px);
+      margin-inline: auto;
+    }
+
+    .terms-hero {
+      padding: 84px 0 48px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .terms-hero::after {
+      content: "";
+      position: absolute;
+      inset: -30% -25% auto -25%;
+      height: 60%;
+      background: radial-gradient(60% 60% at 50% 30%, rgba(255, 79, 167, 0.32), transparent 72%);
+      filter: blur(140px);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+    .terms-hero__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .terms-hero__tag::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rose-hot);
+      box-shadow: 0 0 16px rgba(255, 79, 167, 0.6);
+    }
+    .terms-hero__title {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      margin: 0 0 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .terms-hero__subtitle {
+      color: var(--text-secondary);
+      max-width: 780px;
+      margin: 0 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .terms-hero__date {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .terms-section {
+      padding: 36px 0;
+    }
+    .terms-section__layout {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      background: rgba(15, 10, 13, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+    }
+    .terms-section__head h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.6rem, 3vw, 2rem);
+    }
+    .terms-section__head p {
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 700px;
+    }
+
+    .terms-cards {
+      display: grid;
+      gap: 18px;
+    }
+    .terms-cards--two {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .terms-cards--three {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .terms-card {
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(20, 12, 16, 0.7));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+      transition:
+        transform 0.25s var(--e1, ease),
+        box-shadow 0.3s var(--e1, ease),
+        border-color 0.3s var(--e1, ease);
+    }
+    .terms-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 26px 46px rgba(0, 0, 0, 0.42),
+        0 0 24px rgba(255, 79, 167, 0.26);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .terms-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+    }
+    .terms-card p {
+      margin: 0;
+      color: var(--text-secondary);
+    }
+    .terms-card__note {
+      margin-top: 8px;
+      font-size: 0.92rem;
+      color: var(--text-dim);
+    }
+
+    .terms-stack {
+      display: grid;
+      gap: 24px;
+      background: rgba(14, 10, 13, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(12px);
+    }
+    .terms-block {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    .terms-block--accent {
+      background: linear-gradient(180deg, rgba(255, 79, 167, 0.1), rgba(24, 12, 18, 0.78));
+      border: 1px solid rgba(255, 79, 167, 0.22);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 12px 32px rgba(255, 79, 167, 0.18);
+    }
+    .terms-block--glass {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(18, 10, 14, 0.8));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .terms-block h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+    }
+    .terms-block p {
+      margin: 0 0 14px;
+      color: var(--text-secondary);
+    }
+    .terms-block ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      display: grid;
+      gap: 8px;
+      color: var(--text-secondary);
+    }
+
+    .terms-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .terms-list li {
+      position: relative;
+      padding-left: 28px;
+      color: var(--text-secondary);
+    }
+    .terms-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 14px;
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--rose-hot), var(--neon-pink));
+      box-shadow: 0 0 16px rgba(255, 79, 167, 0.35);
+    }
+
+    .terms-note {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(26, 16, 20, 0.76));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 24px;
+      color: var(--text-secondary);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .terms-note h3 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+    }
+    .terms-note p {
+      margin: 0;
+    }
+
+    .terms-link {
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        text-shadow 0.2s ease;
+    }
+    .terms-link:hover {
+      color: var(--neon-pink);
+      border-color: transparent;
+      text-shadow: 0 0 16px rgba(255, 79, 167, 0.4);
+    }
+
+    @media (max-width: 900px) {
+      .terms-section__layout,
+      .terms-stack {
+        padding: 24px;
+      }
+    }
+    @media (max-width: 640px) {
+      .terms {
+        padding-bottom: 48px;
+      }
+      .terms-hero {
+        padding: 64px 0 36px;
+      }
+      .terms-section__layout,
+      .terms-stack {
+        padding: 20px;
+      }
+      .terms-card {
+        padding: 20px;
+      }
+      .terms-block {
+        padding: 20px;
+      }
+      .terms-note {
+        padding: 20px;
+      }
+    }
+  </style>
+</BaseLayout>

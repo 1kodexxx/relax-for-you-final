@@ -1,0 +1,76 @@
+---
+import "@/styles/button.css";
+
+/**
+ * rfy-button — универсальная кнопка/ссылка.
+ * Props:
+ *  - text: string
+ *  - href?: string                 — если задано, рендерим <a>
+ *  - variant?: "outline"|"primary"|"ghost"  (default: "outline")
+ *  - size?: "sm"|"md"|"lg"         (default: "md")
+ *  - full?: boolean                — на всю ширину
+ *  - disabled?: boolean
+ *  - loading?: boolean             — добавляет aria-busy и блокирует клики
+ *  - class?: string                — прокидывается на корневой тег
+ *  - любые доп. атрибуты (id, target, rel, data-*) — тоже прокинутся
+ */
+const {
+  text,
+  href,
+  variant = "outline",
+  size = "md",
+  full = false,
+  disabled = false,
+  loading = false,
+  class: className = "",
+  ...attrs
+} = Astro.props;
+
+const cls = [
+  className,
+  "rfy-btn",
+  `rfy-${variant}`,
+  `rfy-${size}`,
+  full ? "rfy-full" : "",
+  disabled || loading ? "is-disabled" : "",
+]
+  .filter(Boolean)
+  .join(" ");
+
+const ariaBusy = loading ? "true" : "false";
+const ariaDisabled = disabled || loading ? "true" : "false";
+---
+
+{
+  href ? (
+    <a
+      {...attrs}
+      href={disabled || loading ? undefined : href}
+      class={cls}
+      aria-disabled={ariaDisabled}
+      aria-busy={ariaBusy}
+      data-loading={loading ? "true" : "false"}
+    >
+      <span class="rfy-btn__content">
+        <slot name="icon-left" />
+        <span class="rfy-btn__label">{text}</span>
+        <slot name="icon-right" />
+      </span>
+    </a>
+  ) : (
+    <button
+      {...attrs}
+      class={cls}
+      type="button"
+      disabled={disabled || loading}
+      aria-busy={ariaBusy}
+      data-loading={loading ? "true" : "false"}
+    >
+      <span class="rfy-btn__content">
+        <slot name="icon-left" />
+        <span class="rfy-btn__label">{text}</span>
+        <slot name="icon-right" />
+      </span>
+    </button>
+  )
+}
