@@ -3,6 +3,7 @@
   "[astro]": {
     "editor.defaultFormatter": "astro-build.astro-vscode"
   },
+  "intelephense.notifications.enabled": false,
   "prettier.documentSelectors": ["**/*.astro", "**/*.js", "**/*.ts", "**/*.css"],
   "editor.formatOnSave": true
 }
