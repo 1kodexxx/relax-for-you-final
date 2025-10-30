@@ -1,7 +1,10 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (empty($_SESSION["admin"])) {
-    header("Location: index.php");
+    header("Location: ./index.php");
     exit;
 }
 ?>
@@ -10,67 +13,78 @@ if (empty($_SESSION["admin"])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Панель управления — Relax For You</title>
+  <title>Панель — Relax For You</title>
   <link rel="stylesheet" href="styles/base.css" />
   <link rel="stylesheet" href="styles/layout.css" />
-  <link rel="stylesheet" href="styles/components.css" />
   <link rel="stylesheet" href="styles/dashboard.css" />
 </head>
 <body>
-
-<div class="admin-layout">
-  <!-- Sidebar -->
   <aside class="sidebar">
-    <h2>Разделы</h2>
-    <a href="#" class="nav-item active">🏠 Главная</a>
-    <a href="#" class="nav-item">💆 Мастера</a>
-    <a href="#" class="nav-item">💎 Программы</a>
-    <a href="#" class="nav-item">🖼️ Галерея</a>
-    <a href="#" class="nav-item">⭐ Отзывы</a>
-    <a href="#" class="nav-item">📄 Вакансии</a>
+    <div class="sidebar-brand">
+      <img src="/logo.png" alt="Relax For You logo" class="sidebar-logo" />
+      <div class="sidebar-title">
+        <span class="brand-sub">by Эстетик SPA</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard.php" class="nav-link active">🏠 Главная</a>
+      <a href="programs.php" class="nav-link">💆 Программы</a>
+      <a href="masters.php" class="nav-link">👩‍🦰 Мастера</a>
+      <a href="reviews.php" class="nav-link">💬 Отзывы</a>
+      <a href="gallery.php" class="nav-link">🖼 Галерея</a>
+      <a href="logout.php" class="nav-link">🚪 Выйти</a>
+    </nav>
   </aside>
 
-  <!-- Main Content -->
-  <main>
-    <header class="topbar">
-      <h1>Relax For You — панель администратора</h1>
-      <a href="logout.php" class="logout-btn">Выйти</a>
+
+  <main class="dashboard">
+    <header class="dash-head">
+      <h1>Панель администратора</h1>
+      <p>Управление контентом сайта Relax For You</p>
     </header>
 
-    <section class="dashboard">
-      <div class="dashboard-card">
-        <h3>💆 Мастера</h3>
-        <p>Редактировать информацию о специалистах.</p>
-      </div>
+    <section class="dash-grid">
+      <!-- карточки -->
+      <article class="dash-card">
+        <h3>Мастера</h3>
+        <p>Управляйте профилями специалистов, фото и описаниями.</p>
+        <a href="masters.php" class="btn">Перейти</a>
+      </article>
 
-      <div class="dashboard-card">
-        <h3>💎 Программы SPA</h3>
-        <p>Добавить или изменить массажные программы.</p>
-      </div>
+      <article class="dash-card">
+        <h3>Программы</h3>
+        <p>Добавляйте и редактируйте SPA-программы и категории.</p>
+        <a href="programs.php" class="btn">Перейти</a>
+      </article>
 
-      <div class="dashboard-card">
-        <h3>🖼️ Галерея</h3>
-        <p>Загрузить или удалить фотографии.</p>
-      </div>
+      <article class="dash-card">
+        <h3>Отзывы</h3>
+        <p>Просматривайте отзывы гостей и управляйте публикациями.</p>
+        <a href="reviews.php" class="btn">Перейти</a>
+      </article>
 
-      <div class="dashboard-card">
-        <h3>⭐ Отзывы</h3>
-        <p>Просмотр и модерация отзывов.</p>
-      </div>
-
-      <div class="dashboard-card">
-        <h3>📄 Вакансии</h3>
-        <p>Обновить или добавить вакансии.</p>
-      </div>
-
-      <div class="dashboard-card">
-        <h3>⚙️ Настройки</h3>
-        <p>Основные параметры сайта.</p>
-      </div>
+      <article class="dash-card">
+        <h3>Галерея</h3>
+        <p>Добавляйте фотографии салона и работ мастеров.</p>
+        <a href="gallery.php" class="btn">Перейти</a>
+      </article>
     </section>
   </main>
-</div>
 
-<script src="scripts/main.js"></script>
+  <nav class="mobile-nav">
+    <a href="dashboard.php" class="nav-item active"><i>🏠</i><span>Главная</span></a>
+    <a href="programs.php" class="nav-item"><i>💆</i><span>Программы</span></a>
+    <a href="masters.php" class="nav-item"><i>👩‍🦰</i><span>Мастера</span></a>
+    <a href="reviews.php" class="nav-item"><i>💬</i><span>Отзывы</span></a>
+    <a href="gallery.php" class="nav-item"><i>🖼</i><span>Галерея</span></a>
+  </nav>
+
+  <script src="admin.js"></script>
 </body>
+
+<!-- 🔘 Кнопка меню (мобильная версия) -->
+<button class="menu-toggle" aria-label="Открыть меню">
+  ☰
+</button>
 </html>

@@ -1,42 +1,442 @@
-@import "./variables.css";
-@import "./components.css";
-
 .dashboard {
   padding: 32px;
+  flex: 1;
+  background: radial-gradient(80% 80% at 50% 20%, rgba(255, 43, 106, 0.12), transparent), var(--bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Хэдер */
+.dashboard-header h1 {
+  font-size: clamp(1.6rem, 2vw, 2.2rem);
+  font-weight: 800;
+}
+.dashboard-header p {
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Сетка карточек */
+.cards {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  margin-top: 32px;
 }
 
-.dashboard-card {
-  composes: card;
-  text-align: center;
-  padding: 32px 20px;
-  cursor: pointer;
-  transition: var(--transition);
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
-
-.dashboard-card:hover {
+.card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-accent);
+  box-shadow: 0 12px 32px rgba(255, 43, 106, 0.25);
 }
-
-.dashboard-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
+.card h3 {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: #fff;
 }
-
-.dashboard-card p {
+.card p {
   color: var(--text-secondary);
   font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.card .btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff2b6a, #b00d3a);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: filter 0.25s ease;
+}
+.card .btn:hover {
+  filter: brightness(1.2);
 }
 
-@media (max-width: 640px) {
+/* Адаптивность */
+@media (max-width: 768px) {
   .dashboard {
-    padding: 16px;
+    padding: 20px;
+  }
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+  }
+  .sidebar nav {
+    display: flex;
+    gap: 16px;
+  }
+  .sidebar .logo {
+    display: none;
+  }
+}
+/* === 📱 Адаптив под смартфоны и планшеты === */
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 20px;
   }
 
-  .dashboard-card {
-    padding: 24px 16px;
+  .dashboard-header {
+    text-align: center;
+  }
+
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  /* ↓ Сайдбар превращается в нижнее меню */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    background: rgba(20, 10, 18, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 8px 12px;
+    box-shadow: 0 -6px 32px rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 0;
+    z-index: 999;
+  }
+
+  .sidebar .logo {
+    display: none;
+  }
+
+  .sidebar nav {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    margin: 0;
+  }
+
+  .nav-link {
+    font-size: 0.8rem;
+    padding: 8px;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    transition:
+      color 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .nav-link.active {
+    background: linear-gradient(135deg, rgba(255, 43, 106, 0.3), rgba(176, 13, 58, 0.4));
+    color: #fff;
+  }
+
+  /* Контент */
+  .dashboard {
+    padding-bottom: 80px; /* место под навбар */
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .card h3 {
+    font-size: 1.05rem;
+  }
+
+  .card p {
+    font-size: 0.88rem;
+  }
+
+  .card .btn {
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-header h1 {
+    font-size: 1.3rem;
+  }
+  .dashboard-header p {
+    font-size: 0.9rem;
+  }
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .nav-link {
+    font-size: 0.72rem;
+  }
+}
+/* === 📱 Мобильная навигация === */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: rgba(15, 10, 14, 0.85);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
+  padding: 8px 0 10px;
+  z-index: 9999;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.nav-item i {
+  font-size: 1.3rem;
+  transition:
+    transform 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+.nav-item:hover {
+  color: var(--rose-hot);
+}
+
+.nav-item:hover i {
+  transform: scale(1.1);
+  text-shadow: 0 0 8px rgba(255, 43, 106, 0.45);
+}
+
+.nav-item.active {
+  color: var(--rose-hot);
+}
+
+.nav-item.active i {
+  transform: scale(1.15);
+  text-shadow: 0 0 12px rgba(255, 43, 106, 0.55);
+}
+
+/* подпись */
+.nav-item span {
+  font-size: 0.7rem;
+  letter-spacing: 0.3px;
+  opacity: 0.85;
+}
+
+/* эффект касания */
+.nav-item:active {
+  transform: scale(0.94);
+}
+
+/* только на телефонах */
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none;
+  }
+}
+/* === Универсальные хелперы === */
+.hidden {
+  display: none !important;
+}
+
+/* На случай пересечения по z-index */
+.sidebar {
+  z-index: 100;
+}
+.mobile-nav {
+  z-index: 200;
+}
+/* === Главное содержимое === */
+.dashboard {
+  flex: 1;
+  padding: 40px 24px;
+  margin-left: 220px; /* ширина сайдбара */
+  color: #fff;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 30%, #150a12 0%, #0d0509 100%);
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    margin-left: 0;
+    padding-bottom: 80px; /* отступ под мобильное меню */
+  }
+}
+
+/* Заголовки */
+.dash-head h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.dash-head p {
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 24px;
+}
+
+/* Карточки */
+.dash-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.dash-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.dash-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(255, 43, 106, 0.3);
+}
+
+.dash-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.dash-card p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 16px;
+}
+
+.dash-card .btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff2b6a, #b00d3a);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.dash-card .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(255, 43, 106, 0.4);
+}
+/* === Бренд на вершине сайдбара === */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+.sidebar-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.sidebar-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.brand-sub {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: white;
+  opacity: 0.85;
+  letter-spacing: 0.01em;
+}
+
+/* === Сайдбар адаптивный === */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100vh;
+  background: linear-gradient(180deg, #0e0a0b 0%, #181217 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+}
+
+/* === Мобильная адаптация === */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .brand-sub {
+    display: none;
+  }
+
+  .sidebar-logo {
+    width: 36px;
+    height: 36px;
+    margin: auto;
   }
 }
