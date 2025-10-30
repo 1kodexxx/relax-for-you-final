@@ -2,6 +2,7 @@
   --booking-shadow: 0 32px 120px rgba(176, 13, 58, 0.28);
 }
 
+/* === ОСНОВА МОДАЛКИ === */
 .booking-modal {
   position: fixed;
   inset: 0;
@@ -12,10 +13,10 @@
   backdrop-filter: blur(18px);
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
   transition:
     opacity 0.4s ease,
     visibility 0.4s ease;
-  visibility: hidden;
   z-index: 12000;
 }
 
@@ -25,6 +26,7 @@
   visibility: visible;
 }
 
+/* === ПАНЕЛЬ === */
 .booking-modal__panel {
   position: relative;
   width: min(540px, 100%);
@@ -38,26 +40,31 @@
   color: var(--text-primary, #f8f0f2);
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 43, 106, 0.4) rgba(0, 0, 0, 0.2);
 }
 
+/* === ФИКСИРОВАННЫЙ КРЕСТИК === */
 .booking-modal__close {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 40px;
-  height: 40px;
+  position: fixed;
+  top: clamp(18px, 2vw, 28px);
+  right: clamp(18px, 2vw, 28px);
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   color: #fff;
   font-size: 1.4rem;
   cursor: pointer;
   display: grid;
   place-items: center;
+  z-index: 20000;
   transition:
-    transform 0.3s ease,
-    background 0.3s ease,
-    border-color 0.3s ease;
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    opacity 0.3s ease;
 }
 
 .booking-modal__close:hover {
@@ -66,6 +73,12 @@
   border-color: rgba(255, 43, 106, 0.7);
 }
 
+.booking-modal:not([data-open="true"]) .booking-modal__close {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* === ШАПКА === */
 .booking-modal__header {
   margin-bottom: 24px;
 }
@@ -90,6 +103,7 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
+/* === ФОРМА === */
 .booking-modal__form {
   display: grid;
   gap: 18px;
@@ -107,6 +121,7 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* === INPUTS === */
 .booking-modal__input,
 .booking-modal__select,
 .booking-modal__textarea {
@@ -151,11 +166,7 @@
   min-height: 110px;
 }
 
-.booking-modal__combo {
-  display: grid;
-  gap: 16px;
-}
-
+/* === КНОПКА ОТПРАВКИ === */
 .booking-modal__submit {
   position: relative;
   border: none;
@@ -185,6 +196,38 @@
   cursor: progress;
 }
 
+/* === КНОПКИ СВЯЗИ === */
+.booking-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.booking-modal__alt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #fff);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 12px 28px;
+  border-radius: 100px;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.booking-modal__alt-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+/* === ПОЛИТИКА === */
 .booking-modal__policy {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.55);
@@ -192,6 +235,7 @@
   text-align: center;
 }
 
+/* === FEEDBACK === */
 .booking-modal__feedback {
   border-radius: 18px;
   padding: 14px 18px;
@@ -218,6 +262,7 @@
   color: #ffd6d6;
 }
 
+/* === АДАПТИВ === */
 @media (max-width: 520px) {
   .booking-modal__panel {
     padding: 28px 22px 32px;
@@ -227,34 +272,87 @@
   .booking-modal__submit {
     width: 100%;
   }
+
+  .booking-modal__close {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+  }
 }
-.booking-modal__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  margin-top: 0.8rem;
+/* === АДАПТИВНОЕ ПОВЕДЕНИЕ КРЕСТИКА === */
+
+/* === ФИКСИРОВАННЫЙ КРЕСТИК (адаптивно ближе на десктопе) === */
+.booking-modal__close {
+  position: fixed;
+  top: clamp(16px, 2vw, 28px);
+  right: clamp(16px, 2vw, 28px);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 20000;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    opacity 0.3s ease;
 }
 
-.booking-modal__alt-btn {
-  display: flex; /* 👈 добавлено */
-  align-items: center; /* по вертикали */
-  justify-content: center; /* по горизонтали */
+/* 💻 На десктопе крестик ближе к модалке (примерно над её правым верхним углом) */
+@media (min-width: 900px) {
+  .booking-modal__close {
+    top: 34px;
+    right: calc(50% - 270px); /* фиксировано относительно центра модалки */
+  }
+}
 
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-primary, #fff);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 12px 28px;
-  border-radius: 100px;
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(6px);
-  text-align: center; /* на случай длинных текстов */
-  text-decoration: none; /* чтобы убрать подчеркивание у <a> */
+/* Hover эффект */
+.booking-modal__close:hover {
+  transform: scale(1.05);
+  background: rgba(255, 43, 106, 0.45);
+  border-color: rgba(255, 43, 106, 0.7);
+}
+
+/* Скрывать, когда модалка закрыта */
+.booking-modal:not([data-open="true"]) .booking-modal__close {
+  opacity: 0;
+  pointer-events: none;
+}
+/* === Стили для select времени === */
+.booking-modal__select {
+  color: #fff;
+  background-color: rgba(18, 10, 13, 0.9);
+  border: 1px solid rgba(255, 43, 106, 0.4);
+  border-radius: 18px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ff2b6a 50%),
+    linear-gradient(135deg, #ff2b6a 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) calc(1.1em),
+    calc(100% - 16px) calc(1.1em);
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 52px;
   cursor: pointer;
 }
 
-.booking-modal__alt-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+.booking-modal__select option {
+  background-color: #180a10; /* цвет фона у раскрывающегося меню */
+  color: #fff; /* цвет текста */
+}
+
+.booking-modal__select:focus {
+  outline: none;
+  border-color: rgba(255, 43, 106, 0.85);
+  box-shadow: 0 0 0 2px rgba(255, 43, 106, 0.3);
 }

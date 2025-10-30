@@ -13,7 +13,7 @@ const categoryOrder = new Map([
 ]);
 const categoryLabels: Record<string, string> = {
   spa: "Программы SPA",
-  zones: "Зоны и дополнения",
+  zones: "Дополнительно",
 };
 
 /** Группировка программ по категориям */
@@ -48,8 +48,8 @@ const defaultMaster = masters[0]?.data.name ?? "";
 
 /** Текст в шапке модалки можно переопределить через props */
 const {
-  modalTitle = "Запись на массаж",
-  modalSubtitle = "Укажите удобные дату и время — администратор свяжется в течение 10 минут.",
+  modalTitle = "Онлайн-запись",
+  modalSubtitle = "Укажите подходящую дату и время для сеанса - мы с Вами свяжемся в ближайшее время.",
 } = Astro.props;
 ---
 
@@ -95,7 +95,7 @@ const {
           name="name"
           class="booking-modal__input"
           type="text"
-          placeholder="Как к вам обращаться?"
+          placeholder="Как к Вам обращаться?"
           required
           autocomplete="name"
         />
@@ -109,7 +109,7 @@ const {
           name="phone"
           class="booking-modal__input"
           type="tel"
-          placeholder="+7 (___) ___-__-__"
+          placeholder="+7..."
           required
           autocomplete="tel"
           inputmode="tel"
@@ -145,13 +145,26 @@ const {
             type="date"
             required
             min={new Date().toISOString().split("T")[0]}
+            max={(() => {
+              const d = new Date();
+              d.setMonth(d.getMonth() + 3); // максимум через 3 месяца
+              return d.toISOString().split("T")[0];
+            })()}
           />
         </div>
 
         <!-- Время -->
         <div class="booking-modal__field">
           <label class="booking-modal__label" for="booking-time">Время*</label>
-          <input id="booking-time" name="time" class="booking-modal__input" type="time" required />
+          <select id="booking-time" name="time" class="booking-modal__select" required>
+            {
+              Array.from({ length: 12 }, (_, i) => {
+                const hour = 12 + i; // от 12 до 23
+                const formatted = String(hour).padStart(2, "0") + ":00";
+                return <option value={formatted}>{formatted}</option>;
+              })
+            }
+          </select>
         </div>
       </div>
 
@@ -177,17 +190,19 @@ const {
           name="message"
           class="booking-modal__textarea"
           rows={4}
-          placeholder="Пожелания, уточнения, предпочтения"></textarea>
+          placeholder="Укажите Ваши пожелания или предпочтения по деталям записи"></textarea>
       </div>
 
       <!-- Кнопки -->
       <div class="booking-modal__field">
         <button class="booking-modal__submit" type="submit" data-submit>Отправить заявку</button>
       </div>
-
+      <p>Или свяжитесь с НАМИ по звонку или через сообщения</p>
       <div class="booking-modal__actions">
-        <a href="tel:+79113322917" class="booking-modal__alt-btn">📞 Позвонить</a>
-        <a href="https://wa.me/79113322917" class="booking-modal__alt-btn">💬 Написать</a>
+        <a href="tel:+79533025946" class="booking-modal__alt-btn">📞 Связаться по звонку</a>
+        <a href="https://t.me/IrinaMassage79" class="booking-modal__alt-btn"
+          >💬 Связаться через сообщения</a
+        >
       </div>
 
       <p class="booking-modal__policy">
@@ -307,6 +322,85 @@ const {
       "blur",
       () => (phoneInput.value = normalizePhone(phoneInput.value))
     );
+
+    // === Ограничение времени: 12:00–23:59 ===
+    const timeInput = modal.querySelector("#booking-time");
+    const dateInput = modal.querySelector("#booking-date");
+
+    // нормализуем "HH:MM" -> {h,m}
+    function parseHM(v) {
+      const [h, m] = String(v || "")
+        .split(":")
+        .map((n) => Number(n));
+      return Number.isFinite(h) && Number.isFinite(m) ? { h, m } : null;
+    }
+    function toHM(h, m) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${pad(h)}:${pad(m)}`;
+    }
+    const MIN_HM = { h: 12, m: 0 };
+    const MAX_HM = { h: 23, m: 59 };
+
+    function clampTimeStr(v) {
+      const t = parseHM(v);
+      if (!t) return toHM(MIN_HM.h, MIN_HM.m);
+      const beforeMin = t.h < MIN_HM.h || (t.h === MIN_HM.h && t.m < MIN_HM.m);
+      const afterMax = t.h > MAX_HM.h || (t.h === MAX_HM.h && t.m > MAX_HM.m);
+      if (beforeMin) return toHM(MIN_HM.h, MIN_HM.m);
+      if (afterMax) return toHM(MAX_HM.h, MAX_HM.m);
+      return toHM(t.h, t.m);
+    }
+
+    function isTimeInRange(v) {
+      const t = parseHM(v);
+      if (!t) return false;
+      const min = MIN_HM.h * 60 + MIN_HM.m;
+      const cur = t.h * 60 + t.m;
+      const max = MAX_HM.h * 60 + MAX_HM.m;
+      return cur >= min && cur <= max;
+    }
+
+    // Автокоррекция при вводе/уходе фокуса
+    timeInput?.addEventListener("input", () => {
+      timeInput.value = clampTimeStr(timeInput.value);
+    });
+    timeInput?.addEventListener("blur", () => {
+      timeInput.value = clampTimeStr(timeInput.value);
+    });
+
+    // (опционально) если выбрана сегодняшняя дата — не давать время в прошлом
+    function enforceNotPastIfToday() {
+      if (!dateInput || !timeInput || !dateInput.value || !timeInput.value) return;
+      const todayStr = new Date().toISOString().split("T")[0];
+      if (dateInput.value !== todayStr) return;
+
+      const now = new Date();
+      const t = parseHM(timeInput.value);
+      if (!t) return;
+
+      const selected = new Date();
+      selected.setHours(t.h, t.m, 0, 0);
+
+      if (selected < now) {
+        // если текущее время < 12:00 — ставим 12:00, иначе — ближайшие 5 минут, но не позже 23:59
+        const floor5 = (n) => Math.ceil(n / 5) * 5; // ближайшие будущие 5 минут
+        const nextH = now.getHours();
+        const nextM = floor5(now.getMinutes());
+        let nh = nextH,
+          nm = nextM;
+        if (nm >= 60) {
+          nh += 1;
+          nm = 0;
+        }
+
+        // Учитываем нижнюю/верхнюю границы
+        const bounded = clampTimeStr(toHM(nh, nm));
+        timeInput.value = bounded;
+      }
+    }
+
+    dateInput?.addEventListener("change", enforceNotPastIfToday);
+    timeInput?.addEventListener("change", enforceNotPastIfToday);
 
     // Отправка в Pipedream
     form?.addEventListener("submit", async (e) => {
