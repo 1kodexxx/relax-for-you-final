@@ -26,7 +26,6 @@ import "@/styles/promo-banner.css";
     </ul>
 
     <div class="promo-banner__actions">
-      <!-- ✅ Вот ключевой момент: -->
       <a href="#booking" class="promo-banner__btn" data-booking-trigger>ЗАПИСАТЬСЯ СЕЙЧАС</a>
     </div>
   </div>
@@ -36,21 +35,45 @@ import "@/styles/promo-banner.css";
   (() => {
     const banner = document.querySelector("#promo-banner");
     const closeBtn = banner?.querySelector(".promo-banner__close");
-    if (!banner) return;
+    const gallery = document.querySelector("#gallery"); // 🎯 Блок, после которого появляем баннер
 
-    // Появляется при прокрутке половины страницы
-    const onScroll = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollTop > scrollHeight / 2) {
-        banner.hidden = false;
-        banner.classList.add("visible");
-        window.removeEventListener("scroll", onScroll);
-      }
+    if (!banner || !gallery) return;
+
+    // 🔮 Функция показа баннера
+    const showBanner = () => {
+      banner.hidden = false;
+      banner.classList.add("visible");
     };
-    window.addEventListener("scroll", onScroll);
 
-    // Закрытие баннера
+    // 👀 Отслеживаем появление конца галереи в зоне видимости
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            showBanner();
+            observer.disconnect(); // один раз
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px -10% 0px", // появляется чуть раньше конца
+        threshold: 0.1,
+      }
+    );
+
+    // 📍 Добавим “якорь” в конец галереи, если его нет
+    let endMarker = gallery.querySelector("[data-gallery-end]");
+    if (!endMarker) {
+      endMarker = document.createElement("div");
+      endMarker.setAttribute("data-gallery-end", "");
+      endMarker.style.cssText = "width:100%;height:1px;";
+      gallery.appendChild(endMarker);
+    }
+
+    observer.observe(endMarker);
+
+    // ❌ Закрытие баннера
     closeBtn?.addEventListener("click", () => {
       banner.classList.add("closing");
       setTimeout(() => banner.remove(), 300);
