@@ -213,6 +213,7 @@ const {
       <div class="booking-modal__feedback" data-feedback role="status" aria-live="polite" hidden>
       </div>
     </form>
+    <div class="booking-modal__overlay-message" data-overlay-message hidden></div>
   </div>
 </section>
 
@@ -256,10 +257,25 @@ const {
 
     const setFeedback = (msg, type) => {
       if (!feedback) return;
+
       feedback.textContent = msg || "";
-      feedback.classList.toggle("is-success", type === "success");
-      feedback.classList.toggle("is-error", type === "error");
-      feedback.toggleAttribute("hidden", !msg);
+
+      // Сбрасываем классы
+      feedback.classList.remove("is-success", "is-error", "is-visible");
+
+      if (msg) {
+        // Добавляем тип и делаем видимым
+        if (type === "success") feedback.classList.add("is-success");
+        if (type === "error") feedback.classList.add("is-error");
+        feedback.classList.add("is-visible");
+        feedback.hidden = false;
+        feedback.style.display = "block";
+      } else {
+        // Скрываем
+        feedback.classList.remove("is-visible", "is-success", "is-error");
+        feedback.hidden = true;
+        feedback.style.display = "none";
+      }
     };
 
     const open = (dataset = {}) => {
@@ -413,14 +429,34 @@ const {
       // honeypot
       if (payload.company) return;
 
-      if (
-        !payload.name ||
-        !payload.phone ||
-        !payload.selected_program ||
-        !payload.date ||
-        !payload.time
-      ) {
-        setFeedback("Заполните имя, телефон, программу, дату и время.", "error");
+      const requiredFields = {
+        name: "Имя",
+        phone: "Телефон",
+        selected_program: "Программа массажа",
+        date: "Дата",
+        time: "Время",
+      };
+
+      // Сброс подсветки
+      form.querySelectorAll(".booking-modal__input, .booking-modal__select").forEach((el) => {
+        el.classList.remove("is-error");
+      });
+
+      // Проверяем, какие поля не заполнены
+      const missing = Object.entries(requiredFields)
+        .filter(([key]) => !payload[key] || String(payload[key]).trim() === "")
+        .map(([_, label]) => label);
+
+      if (missing.length > 0) {
+        // Подсветка самих полей
+        Object.keys(requiredFields).forEach((key) => {
+          const el = form.querySelector(`[name="${key}"]`);
+          if (!payload[key] || String(payload[key]).trim() === "") {
+            el?.classList.add("is-error");
+          }
+        });
+
+        setFeedback(`Заполните следующие поля: ${missing.join(", ")}.`, "error");
         return;
       }
 
@@ -449,12 +485,13 @@ const {
         });
 
         if (res.ok) {
-          setFeedback(
-            "✨ Заявка отправлена. Менеджер свяжется с вами в ближайшее время.",
-            "success"
-          );
+          setFeedback("✅ Успешно! Мы свяжемся с вами в ближайшее время.", "success");
           form.reset();
-          setTimeout(close, 2400);
+          form.querySelectorAll(".booking-modal__input, .booking-modal__select").forEach((el) => {
+            el.classList.remove("is-error");
+          });
+          setTimeout(() => setFeedback("", ""), 3000); // скрыть через 3 секунды
+          setTimeout(close, 3200);
         } else {
           setFeedback("⚠️ Ошибка при отправке. Попробуйте позже.", "error");
         }
