@@ -466,3 +466,49 @@
   color: #ffd6d6;
   box-shadow: 0 20px 80px rgba(255, 92, 92, 0.28);
 }
+/* === Исправление видимости текста в select === */
+.booking-modal__select,
+.booking-modal__select option {
+  background-color: #240d16 !important; /* чуть светлее фон */
+  color: #fff !important;
+}
+
+/* при открытии в фокусе делаем контрастнее */
+.booking-modal__select:focus {
+  background-color: #2e0f1c !important;
+  color: #fff !important;
+  border-color: rgba(255, 43, 106, 0.8);
+}
+/* === Фикс: выпадающий список времени становится чёрным === */
+.booking-modal__select {
+  background-color: #2b0e19 !important; /* фон селекта */
+  color: #fff !important; /* текст белый */
+}
+
+/* отдельный фон для выпадающего списка */
+.booking-modal__select option {
+  background-color: #3a1420 !important; /* фон пунктов */
+  color: #fff !important; /* текст пунктов */
+}
+
+/* Firefox (иначе там фон остаётся системным) */
+.booking-modal__select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #fff;
+}
+
+/* Для Chrome / Edge принудительно перекрашиваем "popup" слой */
+@supports (-webkit-appearance: none) or (-moz-appearance: none) {
+  select.booking-modal__select {
+    background-color: #2b0e19 !important;
+    color: #fff !important;
+  }
+}
+
+/* Эффект при фокусе */
+.booking-modal__select:focus {
+  background-color: #3a1420 !important;
+  border-color: rgba(255, 43, 106, 0.8);
+  box-shadow: 0 0 0 2px rgba(255, 43, 106, 0.3);
+  color: #fff !important;
+}
