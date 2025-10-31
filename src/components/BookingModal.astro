@@ -220,13 +220,14 @@ const {
 <!-- ================== JS ================== -->
 <script is:inline>
   (() => {
-    const WEBHOOK_URL = "https://eoiolinmefd6i6s.m.pipedream.net"; // ← замени на свой
+    const WEBHOOK_URL = "https://eoiolinmefd6i6s.m.pipedream.net";
 
     const modal = document.querySelector("[data-booking-modal]");
     if (!modal) return;
 
     const form = modal.querySelector("[data-form]");
     const feedback = modal.querySelector("[data-feedback]");
+    const overlayMsg = modal.querySelector("[data-overlay-message]");
     const submitBtn = modal.querySelector("[data-submit]");
     const closeBtns = modal.querySelectorAll("[data-close]");
     const backdrop = modal.querySelector("[data-backdrop]");
@@ -237,7 +238,22 @@ const {
     const phoneInput = modal.querySelector("#booking-phone");
     const defaultSubmitText = submitBtn?.textContent || "";
 
-    // localStorage: запоминаем имя и телефон
+    // === Центрированные overlay-сообщения ===
+    const showOverlayMessage = (msg, type = "success", duration = 2600) => {
+      if (!overlayMsg) return;
+      overlayMsg.textContent = msg;
+      overlayMsg.classList.remove("is-success", "is-error", "is-visible");
+      if (type === "success") overlayMsg.classList.add("is-success");
+      if (type === "error") overlayMsg.classList.add("is-error");
+      overlayMsg.hidden = false;
+      requestAnimationFrame(() => overlayMsg.classList.add("is-visible"));
+      setTimeout(() => {
+        overlayMsg.classList.remove("is-visible");
+        overlayMsg.hidden = true;
+      }, duration);
+    };
+
+    // === localStorage: запоминаем имя и телефон ===
     try {
       const savedName = localStorage.getItem("rfy_name");
       const savedPhone = localStorage.getItem("rfy_phone");
@@ -255,43 +271,16 @@ const {
     const lockScroll = () => (document.body.style.overflow = "hidden");
     const unlockScroll = () => (document.body.style.overflow = "");
 
-    const setFeedback = (msg, type) => {
-      if (!feedback) return;
-
-      feedback.textContent = msg || "";
-
-      // Сбрасываем классы
-      feedback.classList.remove("is-success", "is-error", "is-visible");
-
-      if (msg) {
-        // Добавляем тип и делаем видимым
-        if (type === "success") feedback.classList.add("is-success");
-        if (type === "error") feedback.classList.add("is-error");
-        feedback.classList.add("is-visible");
-        feedback.hidden = false;
-        feedback.style.display = "block";
-      } else {
-        // Скрываем
-        feedback.classList.remove("is-visible", "is-success", "is-error");
-        feedback.hidden = true;
-        feedback.style.display = "none";
-      }
-    };
-
     const open = (dataset = {}) => {
       modal.setAttribute("data-open", "true");
       modal.setAttribute("aria-hidden", "false");
       lockScroll();
 
-      // подстановка из dataset
       const { program, master } = dataset;
       if (program && programSelect) programSelect.value = program;
       if (master && masterSelect) masterSelect.value = master;
 
-      // фокус
       requestAnimationFrame(() => firstField?.focus());
-
-      // чистим #hash
       if (location.hash === "#booking") {
         history.replaceState(null, "", location.pathname + location.search);
       }
@@ -305,12 +294,18 @@ const {
       form instanceof HTMLFormElement && form.reset();
     };
 
-    triggers.forEach((t) =>
-      t.addEventListener("click", (e) => {
-        e.preventDefault();
-        open(t.dataset);
-      })
-    );
+    // ✅ Универсальный делегат — работает даже с динамическими кнопками
+    document.addEventListener("click", (e) => {
+      const trigger =
+        e.target && e.target.closest
+          ? e.target.closest('a[href="#booking"], [data-booking-trigger]')
+          : null;
+
+      if (!trigger) return;
+      e.preventDefault();
+      open(trigger.dataset);
+    });
+
     closeBtns.forEach((b) => b.addEventListener("click", close));
     backdrop?.addEventListener("click", close);
     document.addEventListener(
@@ -320,114 +315,28 @@ const {
 
     if (location.hash === "#booking") open();
 
-    // Небольшая маска/нормализация телефона
+    // === Маска телефона ===
     function normalizePhone(raw) {
       const d = String(raw || "").replace(/\D/g, "");
       if (!d) return "";
       if (d.length === 10)
-        return (
-          "+7 (" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6, 8) + "-" + d.slice(8, 10)
-        );
+        return `+7 (${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6, 8)}-${d.slice(8, 10)}`;
       if (d.length >= 11)
-        return (
-          "+7 (" + d.slice(1, 4) + ") " + d.slice(4, 7) + "-" + d.slice(7, 9) + "-" + d.slice(9, 11)
-        );
+        return `+7 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7, 9)}-${d.slice(9, 11)}`;
       return raw;
     }
-    phoneInput?.addEventListener(
-      "blur",
-      () => (phoneInput.value = normalizePhone(phoneInput.value))
-    );
-
-    // === Ограничение времени: 12:00–23:59 ===
-    const timeInput = modal.querySelector("#booking-time");
-    const dateInput = modal.querySelector("#booking-date");
-
-    // нормализуем "HH:MM" -> {h,m}
-    function parseHM(v) {
-      const [h, m] = String(v || "")
-        .split(":")
-        .map((n) => Number(n));
-      return Number.isFinite(h) && Number.isFinite(m) ? { h, m } : null;
-    }
-    function toHM(h, m) {
-      const pad = (n) => String(n).padStart(2, "0");
-      return `${pad(h)}:${pad(m)}`;
-    }
-    const MIN_HM = { h: 12, m: 0 };
-    const MAX_HM = { h: 23, m: 59 };
-
-    function clampTimeStr(v) {
-      const t = parseHM(v);
-      if (!t) return toHM(MIN_HM.h, MIN_HM.m);
-      const beforeMin = t.h < MIN_HM.h || (t.h === MIN_HM.h && t.m < MIN_HM.m);
-      const afterMax = t.h > MAX_HM.h || (t.h === MAX_HM.h && t.m > MAX_HM.m);
-      if (beforeMin) return toHM(MIN_HM.h, MIN_HM.m);
-      if (afterMax) return toHM(MAX_HM.h, MAX_HM.m);
-      return toHM(t.h, t.m);
-    }
-
-    function isTimeInRange(v) {
-      const t = parseHM(v);
-      if (!t) return false;
-      const min = MIN_HM.h * 60 + MIN_HM.m;
-      const cur = t.h * 60 + t.m;
-      const max = MAX_HM.h * 60 + MAX_HM.m;
-      return cur >= min && cur <= max;
-    }
-
-    // Автокоррекция при вводе/уходе фокуса
-    timeInput?.addEventListener("input", () => {
-      timeInput.value = clampTimeStr(timeInput.value);
-    });
-    timeInput?.addEventListener("blur", () => {
-      timeInput.value = clampTimeStr(timeInput.value);
+    phoneInput?.addEventListener("blur", () => {
+      phoneInput.value = normalizePhone(phoneInput.value);
     });
 
-    // (опционально) если выбрана сегодняшняя дата — не давать время в прошлом
-    function enforceNotPastIfToday() {
-      if (!dateInput || !timeInput || !dateInput.value || !timeInput.value) return;
-      const todayStr = new Date().toISOString().split("T")[0];
-      if (dateInput.value !== todayStr) return;
-
-      const now = new Date();
-      const t = parseHM(timeInput.value);
-      if (!t) return;
-
-      const selected = new Date();
-      selected.setHours(t.h, t.m, 0, 0);
-
-      if (selected < now) {
-        // если текущее время < 12:00 — ставим 12:00, иначе — ближайшие 5 минут, но не позже 23:59
-        const floor5 = (n) => Math.ceil(n / 5) * 5; // ближайшие будущие 5 минут
-        const nextH = now.getHours();
-        const nextM = floor5(now.getMinutes());
-        let nh = nextH,
-          nm = nextM;
-        if (nm >= 60) {
-          nh += 1;
-          nm = 0;
-        }
-
-        // Учитываем нижнюю/верхнюю границы
-        const bounded = clampTimeStr(toHM(nh, nm));
-        timeInput.value = bounded;
-      }
-    }
-
-    dateInput?.addEventListener("change", enforceNotPastIfToday);
-    timeInput?.addEventListener("change", enforceNotPastIfToday);
-
-    // Отправка в Pipedream
+    // === Отправка формы ===
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!(form instanceof HTMLFormElement)) return;
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
-
-      // honeypot
-      if (payload.company) return;
+      if (payload.company) return; // honeypot
 
       const requiredFields = {
         name: "Имя",
@@ -437,35 +346,26 @@ const {
         time: "Время",
       };
 
-      // Сброс подсветки
-      form.querySelectorAll(".booking-modal__input, .booking-modal__select").forEach((el) => {
-        el.classList.remove("is-error");
-      });
+      form
+        .querySelectorAll(".booking-modal__input, .booking-modal__select")
+        .forEach((el) => el.classList.remove("is-error"));
 
-      // Проверяем, какие поля не заполнены
       const missing = Object.entries(requiredFields)
         .filter(([key]) => !payload[key] || String(payload[key]).trim() === "")
         .map(([_, label]) => label);
 
       if (missing.length > 0) {
-        // Подсветка самих полей
         Object.keys(requiredFields).forEach((key) => {
           const el = form.querySelector(`[name="${key}"]`);
-          if (!payload[key] || String(payload[key]).trim() === "") {
-            el?.classList.add("is-error");
-          }
+          if (!payload[key] || String(payload[key]).trim() === "") el?.classList.add("is-error");
         });
-
-        setFeedback(`Заполните следующие поля: ${missing.join(", ")}.`, "error");
+        showOverlayMessage(`Заполните: ${missing.join(", ")}.`, "error", 2800);
         return;
       }
 
       try {
         submitBtn.setAttribute("disabled", "true");
         submitBtn.textContent = "Отправляем…";
-        setFeedback("", "");
-
-        // антибот-задержка
         await new Promise((r) => setTimeout(r, 400 + Math.random() * 300));
 
         const res = await fetch(WEBHOOK_URL, {
@@ -485,19 +385,15 @@ const {
         });
 
         if (res.ok) {
-          setFeedback("✅ Успешно! Мы свяжемся с вами в ближайшее время.", "success");
+          showOverlayMessage("✅ Заявка успешно отправлена! Мы скоро свяжемся 💗", "success", 2600);
           form.reset();
-          form.querySelectorAll(".booking-modal__input, .booking-modal__select").forEach((el) => {
-            el.classList.remove("is-error");
-          });
-          setTimeout(() => setFeedback("", ""), 3000); // скрыть через 3 секунды
-          setTimeout(close, 3200);
+          setTimeout(close, 2800);
         } else {
-          setFeedback("⚠️ Ошибка при отправке. Попробуйте позже.", "error");
+          showOverlayMessage("⚠️ Ошибка при отправке. Попробуйте позже.", "error", 2800);
         }
       } catch (err) {
         console.error(err);
-        setFeedback("❌ Ошибка соединения. Проверьте интернет.", "error");
+        showOverlayMessage("❌ Ошибка соединения. Проверьте интернет.", "error", 2800);
       } finally {
         submitBtn.removeAttribute("disabled");
         submitBtn.textContent = defaultSubmitText;

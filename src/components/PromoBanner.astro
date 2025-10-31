@@ -1,0 +1,59 @@
+---
+import "@/styles/promo-banner.css";
+---
+
+<section id="promo-banner" class="promo-banner" hidden>
+  <div class="promo-banner__panel">
+    <button class="promo-banner__close" type="button" aria-label="Закрыть">×</button>
+
+    <div class="promo-banner__image">
+      <img src="/banner.jpg" alt="Relax GOLD" loading="lazy" decoding="async" />
+    </div>
+
+    <header class="promo-banner__header">
+      <p class="promo-banner__eyebrow">🔥 Специальное предложение</p>
+      <h2 class="promo-banner__title_text">
+        Для <span>НАШИХ</span> клиентов <span>СЕЙЧАС</span> действует акция ✅✅✅
+      </h2>
+    </header>
+
+    <ul class="promo-banner__list">
+      <li>
+        🔥 <b>Body EROTIC</b> по будням с 12:00–16:00 → <span class="price-banner">5000 ₽</span>
+      </li>
+      <li>💎 <b>Скидка 50%</b> на VIP в День Рождения</li>
+      <li>🎁 Приведи 3 друзей — получи МАССАЖ в подарок</li>
+    </ul>
+
+    <div class="promo-banner__actions">
+      <!-- ✅ Вот ключевой момент: -->
+      <a href="#booking" class="promo-banner__btn" data-booking-trigger>ЗАПИСАТЬСЯ СЕЙЧАС</a>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const banner = document.querySelector("#promo-banner");
+    const closeBtn = banner?.querySelector(".promo-banner__close");
+    if (!banner) return;
+
+    // Появляется при прокрутке половины страницы
+    const onScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollTop > scrollHeight / 2) {
+        banner.hidden = false;
+        banner.classList.add("visible");
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll);
+
+    // Закрытие баннера
+    closeBtn?.addEventListener("click", () => {
+      banner.classList.add("closing");
+      setTimeout(() => banner.remove(), 300);
+    });
+  })();
+</script>
