@@ -1,0 +1,280 @@
+---
+import "@/styles/booking-modal.css";
+
+/** Текст в шапке модалки можно переопределить через props */
+const {
+  modalTitle = "Оставить отзыв",
+  modalSubtitle = "Поделитесь своими впечатлениями о сеансе — нам важно ваше мнение 💗",
+} = Astro.props;
+---
+
+<section id="review" class="booking-modal" data-review-modal aria-hidden="true" role="presentation">
+  <div class="booking-modal__backdrop" data-backdrop></div>
+
+  <div
+    class="booking-modal__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="review-modal-title"
+  >
+    <button class="booking-modal__close" type="button" data-close aria-label="Закрыть">×</button>
+
+    <header class="booking-modal__header">
+      <p class="booking-modal__eyebrow">Relax For You</p>
+      <h2 id="review-modal-title" class="booking-modal__title">{modalTitle}</h2>
+      <p class="booking-modal__subtitle">{modalSubtitle}</p>
+    </header>
+
+    <form class="booking-modal__form" data-form novalidate>
+      <!-- honeypot -->
+      <input
+        type="text"
+        name="company"
+        aria-hidden="true"
+        tabindex="-1"
+        autocomplete="off"
+        style="position:absolute;left:-9999px;opacity:0;"
+      />
+
+      <!-- Имя -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="review-name">Имя*</label>
+        <input
+          id="review-name"
+          name="name"
+          class="booking-modal__input"
+          type="text"
+          placeholder="Ваше имя"
+          required
+          autocomplete="name"
+        />
+      </div>
+
+      <!-- Телефон -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="review-phone">Телефон*</label>
+        <input
+          id="review-phone"
+          name="phone"
+          class="booking-modal__input"
+          type="tel"
+          placeholder="+7..."
+          required
+          autocomplete="tel"
+          inputmode="tel"
+        />
+      </div>
+
+      <!-- Рейтинг -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="review-rating">Оценка*</label>
+        <select id="review-rating" name="rating" class="booking-modal__select" required>
+          <option value="">Выберите оценку</option>
+          <option value="5">⭐️ 5 — Отлично!</option>
+          <option value="4">⭐️ 4 — Хорошо</option>
+          <option value="3">⭐️ 3 — Средне</option>
+          <option value="2">⭐️ 2 — Не понравилось</option>
+          <option value="1">⭐️ 1 — Плохо</option>
+        </select>
+      </div>
+
+      <!-- Текст отзыва -->
+      <div class="booking-modal__field">
+        <label class="booking-modal__label" for="review-text">Отзыв*</label>
+        <textarea
+          id="review-text"
+          name="message"
+          class="booking-modal__textarea"
+          rows={5}
+          placeholder="Ваши впечатления..."
+          required></textarea>
+      </div>
+
+      <div class="booking-modal__field">
+        <button class="booking-modal__submit" type="submit" data-submit>Отправить отзыв</button>
+      </div>
+
+      <p class="booking-modal__policy">
+        Отправляя отзыв, вы соглашаетесь с условиями обработки персональных данных и политикой
+        конфиденциальности Relax For You.
+      </p>
+
+      <div class="booking-modal__feedback" data-feedback role="status" aria-live="polite" hidden>
+      </div>
+    </form>
+
+    <!-- Центрированное сообщение -->
+    <div class="booking-modal__overlay-message" data-overlay-message hidden></div>
+  </div>
+</section>
+
+<!-- ================== JS ================== -->
+<script is:inline>
+  (() => {
+    const WEBHOOK_URL = "https://eop0updorcbwyjv.m.pipedream.net"; // ← твой вебхук
+
+    const modal = document.querySelector("[data-review-modal]");
+    if (!modal) return;
+
+    const form = modal.querySelector("[data-form]");
+    const feedback = modal.querySelector("[data-feedback]");
+    const overlayMsg = modal.querySelector("[data-overlay-message]");
+    const submitBtn = modal.querySelector("[data-submit]");
+    const closeBtns = modal.querySelectorAll("[data-close]");
+    const backdrop = modal.querySelector("[data-backdrop]");
+    const triggers = document.querySelectorAll('a[href="#review"], [data-review-trigger]');
+    const firstField = modal.querySelector("#review-name");
+    const phoneInput = modal.querySelector("#review-phone");
+    const defaultSubmitText = submitBtn?.textContent || "";
+
+    const lockScroll = () => (document.body.style.overflow = "hidden");
+    const unlockScroll = () => (document.body.style.overflow = "");
+
+    const setFeedback = (msg, type) => {
+      if (!feedback) return;
+      feedback.textContent = msg || "";
+      feedback.classList.remove("is-success", "is-error", "is-visible");
+      if (msg) {
+        if (type === "success") feedback.classList.add("is-success");
+        if (type === "error") feedback.classList.add("is-error");
+        feedback.classList.add("is-visible");
+        feedback.hidden = false;
+        feedback.style.display = "block";
+      } else {
+        feedback.hidden = true;
+        feedback.style.display = "none";
+      }
+    };
+
+    const showOverlayMessage = (msg, type = "success", duration = 2500) => {
+      if (!overlayMsg) return;
+      overlayMsg.textContent = msg;
+      overlayMsg.classList.remove("is-success", "is-error", "is-visible");
+      if (type === "success") overlayMsg.classList.add("is-success");
+      if (type === "error") overlayMsg.classList.add("is-error");
+      overlayMsg.hidden = false;
+      requestAnimationFrame(() => overlayMsg.classList.add("is-visible"));
+      setTimeout(() => {
+        overlayMsg.classList.remove("is-visible");
+        overlayMsg.hidden = true;
+      }, duration);
+    };
+
+    const open = () => {
+      modal.setAttribute("data-open", "true");
+      modal.setAttribute("aria-hidden", "false");
+      lockScroll();
+      requestAnimationFrame(() => firstField?.focus());
+      if (location.hash === "#review") {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+    };
+
+    const close = () => {
+      modal.setAttribute("data-open", "false");
+      modal.setAttribute("aria-hidden", "true");
+      unlockScroll();
+      setFeedback("", "");
+      form instanceof HTMLFormElement && form.reset();
+    };
+
+    triggers.forEach((t) =>
+      t.addEventListener("click", (e) => {
+        e.preventDefault();
+        open();
+      })
+    );
+    closeBtns.forEach((b) => b.addEventListener("click", close));
+    backdrop?.addEventListener("click", close);
+    document.addEventListener(
+      "keydown",
+      (e) => e.key === "Escape" && modal.getAttribute("data-open") === "true" && close()
+    );
+    if (location.hash === "#review") open();
+
+    // === Нормализация телефона ===
+    function normalizePhone(raw) {
+      const d = String(raw || "").replace(/\D/g, "");
+      if (!d) return "";
+      if (d.length === 10)
+        return (
+          "+7 (" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6, 8) + "-" + d.slice(8, 10)
+        );
+      if (d.length >= 11)
+        return (
+          "+7 (" + d.slice(1, 4) + ") " + d.slice(4, 7) + "-" + d.slice(7, 9) + "-" + d.slice(9, 11)
+        );
+      return raw;
+    }
+    phoneInput?.addEventListener(
+      "blur",
+      () => (phoneInput.value = normalizePhone(phoneInput.value))
+    );
+
+    // === Отправка ===
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!(form instanceof HTMLFormElement)) return;
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+      if (payload.company) return;
+
+      const requiredFields = {
+        name: "Имя",
+        phone: "Телефон",
+        rating: "Оценка",
+        message: "Отзыв",
+      };
+
+      form
+        .querySelectorAll(".booking-modal__input, .booking-modal__select, .booking-modal__textarea")
+        .forEach((el) => el.classList.remove("is-error"));
+
+      const missing = Object.entries(requiredFields)
+        .filter(([key]) => !payload[key] || String(payload[key]).trim() === "")
+        .map(([_, label]) => label);
+
+      if (missing.length > 0) {
+        Object.keys(requiredFields).forEach((key) => {
+          const el = form.querySelector(`[name="${key}"]`);
+          if (!payload[key] || String(payload[key]).trim() === "") el?.classList.add("is-error");
+        });
+        showOverlayMessage(`Заполните: ${missing.join(", ")}.`, "error", 2800);
+        return;
+      }
+
+      try {
+        submitBtn.setAttribute("disabled", "true");
+        submitBtn.textContent = "Отправляем…";
+        await new Promise((r) => setTimeout(r, 400 + Math.random() * 300));
+
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "review",
+            name: payload.name,
+            phone: payload.phone,
+            rating: payload.rating,
+            message: payload.message,
+            site: location.hostname,
+          }),
+        });
+
+        if (res.ok) {
+          showOverlayMessage("🌸 Спасибо за отзыв! Нам очень приятно 💖", "success", 2600);
+          form.reset();
+          setTimeout(close, 2800);
+        } else {
+          showOverlayMessage("⚠️ Ошибка при отправке. Попробуйте позже.", "error", 2800);
+        }
+      } catch (err) {
+        console.error(err);
+        showOverlayMessage("❌ Ошибка соединения. Проверьте интернет.", "error", 2800);
+      } finally {
+        submitBtn.removeAttribute("disabled");
+        submitBtn.textContent = defaultSubmitText;
+      }
+    });
+  })();
+</script>

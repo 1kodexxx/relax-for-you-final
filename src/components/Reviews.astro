@@ -130,8 +130,16 @@ const REVIEWS = [
 const avg =
   Math.round((REVIEWS.reduce((s, r) => s + (r.rating || 0), 0) / REVIEWS.length) * 10) / 10;
 
-function getPhotos(r) {
-  return r.photos || [];
+function getPhotos(r: {
+  id?: string;
+  name?: string;
+  date?: string;
+  rating?: number;
+  source?: string;
+  text?: string;
+  photos?: string[];
+}) {
+  return Array.isArray(r.photos) ? r.photos : [];
 }
 ---
 
@@ -206,15 +214,11 @@ function getPhotos(r) {
             {r.text}
           </p>
 
-          {getPhotos(r).length > 0 && (
-            <div class="rv-photos">
-              {getPhotos(r).map((p) => (
-                <button class="rv-ph" data-src={p} aria-label="Открыть фото">
-                  <img loading="lazy" decoding="async" src={p} alt="" />
-                </button>
-              ))}
-            </div>
-          )}
+          {getPhotos(r).map((p: string) => (
+            <button class="rv-ph" data-src={p} aria-label="Открыть фото">
+              <img loading="lazy" decoding="async" src={p} alt="" />
+            </button>
+          ))}
         </article>
       ))
     }
@@ -228,12 +232,7 @@ function getPhotos(r) {
       <p class="rv-muted">Нам важно каждое слово — мы читаем и отвечаем всем.</p>
     </div>
     <div class="rv-cta__actions" data-reveal-item>
-      <a
-        class="rv-btn-ghost"
-        href="https://vk.com/massage_murmansk51?from=groups&w=community-review-27680891"
-        target="_blank"
-        rel="noopener">Оставить отзыв</a
-      >
+      <button class="rv-btn-ghost" data-review-trigger>Оставить отзыв</button>
       <a class="rv-btn-ghost" href="https://wa.me/79113322917">Написать лично</a>
     </div>
   </div>
