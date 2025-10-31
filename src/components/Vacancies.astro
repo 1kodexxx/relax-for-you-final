@@ -64,51 +64,56 @@ import "@/styles/vacancies.css";
     </div>
 
     <!-- 🪷 Условия и формат -->
-    <!-- 🔘 Кнопка показать условия -->
-    <div class="vac-toggle" data-reveal-item>
-      <button class="vac-toggle__btn" type="button" data-toggle-terms>Подробнее ↓</button>
-    </div>
-    <div class="vac-terms-wrapper" hidden>
-      <section class="vac-terms" aria-labelledby="vac-terms-h" data-reveal-group data-stagger="120">
-        <h3 id="vac-terms-h" class="vac-terms__title" data-reveal-item>
-          Условия и формат сотрудничества
-        </h3>
-        <div class="vac-terms__grid">
-          <div class="term card-ghost" data-reveal-item>
-            <h4>График</h4>
+    <section class="vac-terms" aria-labelledby="vac-terms-h" data-reveal-group data-stagger="120">
+      <h3 id="vac-terms-h" class="vac-terms__title" data-reveal-item>
+        Условия и формат сотрудничества
+      </h3>
+      <div class="vac-terms__grid">
+        <div class="term card-ghost" data-reveal-item>
+          <button class="term__header" type="button">График</button>
+          <div class="term__content">
             <p>
               Смены устанавливаются индивидуально по желанию сотрудников. Ты можешь создать для себя
               идеальный график работы. Главное, помни, что от количества рабочего времени зависит
               твой заработок.
             </p>
           </div>
-          <div class="term card-ghost" data-reveal-item>
-            <h4>Доход</h4>
+        </div>
+
+        <div class="term card-ghost" data-reveal-item>
+          <button class="term__header" type="button">Доход</button>
+          <div class="term__content">
             <p>
               Заработанная плата одна из самых высоких в сфере услуг. Выплачивается каждый день,
               после рабочей смены. Имеются постоянные бонусы, премии, подарки и другие системы
               поощрения.
             </p>
           </div>
-          <div class="term card-ghost" data-reveal-item>
-            <h4>Атмосфера</h4>
+        </div>
+
+        <div class="term card-ghost" data-reveal-item>
+          <button class="term__header" type="button">Атмосфера</button>
+          <div class="term__content">
             <p>
               Мы знаем, насколько важно работать в чистоте и уюте. Поэтому мы предоставляем самые
               лучшие условия для наших людей. В нашем распоряжении 3 премиальных салона красоты и
-              массажа. Попробуй однажды и ты не захочешь с нами расставаться.
-            </p>
-          </div>
-          <div class="term card-ghost" data-reveal-item>
-            <h4>Обучение</h4>
-            <p>
-              Мы предоставляем бесплатное обучение на всех этапах сотрудничества. Постоянное
-              повышение квалификации на счет компании. Неважно, профессионал или новичок, наша
-              команда дает возможности, от которых сложно отказаться.
+              массажа. Попробуй однажды — и ты не захочешь с нами расставаться.
             </p>
           </div>
         </div>
-      </section>
-    </div>
+
+        <div class="term card-ghost" data-reveal-item>
+          <button class="term__header" type="button">Обучение</button>
+          <div class="term__content">
+            <p>
+              Мы предоставляем бесплатное обучение на всех этапах сотрудничества. Постоянное
+              повышение квалификации за счёт компании. Неважно, профессионал или новичок — наша
+              команда даёт возможности, от которых сложно отказаться.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- 💌 Как откликнуться -->
     <section class="vac-cta" data-reveal-group data-stagger="140">
@@ -117,116 +122,108 @@ import "@/styles/vacancies.css";
           <h3>Хочу работать в Relax For You</h3>
           <p class="muted">
             Если вы готовы находиться в лучшей компании и команде сферы МАССАЖА, то добро пожаловать
-            в коллектив! Присылайте нам свои оклики с резюме, общими данными и фотографиями. Мы ждем
-            именно ТЕБЯ!
+            в коллектив! Присылайте нам свои отклики с резюме, общими данными и фотографиями — мы
+            ждём именно Вас!
           </p>
         </div>
         <div class="vac-cta__actions">
-          <a class="btn-outline" href="#contacts" data-scroll-to-contacts> Откликнуться </a>
+          <a class="btn-outline" href="#contacts" data-scroll-to-contacts>Откликнуться</a>
         </div>
       </div>
     </section>
 
-    <!-- 🔮 Локальный reveal-скрипт -->
+    <!-- 🔮 Анимации появления -->
     <script is:inline>
       (function () {
         var root = document.getElementById("vacancies");
         if (!root) return;
 
-        // Подстраховка: активируем глобальный класс для CSS-анимаций
         try {
           document.documentElement.classList.add("rfy-armed");
         } catch (e) {}
 
-        // Если IntersectionObserver не поддерживается
         if (typeof window.IntersectionObserver !== "function") {
-          var items = root.querySelectorAll("[data-reveal-item]");
-          for (var i = 0; i < items.length; i++) items[i].classList.add("in");
-          var groups = root.querySelectorAll("[data-reveal-group]");
-          for (var j = 0; j < groups.length; j++) groups[j].classList.add("in");
+          root.querySelectorAll("[data-reveal-item]").forEach((el) => el.classList.add("in"));
+          root.querySelectorAll("[data-reveal-group]").forEach((el) => el.classList.add("in"));
           return;
         }
 
         var io = new IntersectionObserver(
-          function (entries) {
-            for (var k = 0; k < entries.length; k++) {
-              var en = entries[k];
-              if (!en.isIntersecting) continue;
-
+          (entries) => {
+            entries.forEach((en) => {
+              if (!en.isIntersecting) return;
               var el = en.target;
-              var group = el.closest ? el.closest("[data-reveal-group]") : null;
-
+              var group = el.closest("[data-reveal-group]");
               if (group) {
                 var items = group.querySelectorAll("[data-reveal-item]");
-                var idx = 0;
-                for (var q = 0; q < items.length; q++) if (items[q] === el) idx = q;
+                var idx = Array.prototype.indexOf.call(items, el);
                 var stagger = Number(group.getAttribute("data-stagger") || 120);
-                try {
-                  el.style.setProperty("--i", String(idx));
-                  el.style.setProperty("--stagger", stagger + "ms");
-                } catch (e) {}
+                el.style.setProperty("--i", String(idx));
+                el.style.setProperty("--stagger", stagger + "ms");
               }
-
               el.classList.add("in");
               io.unobserve(el);
-            }
+            });
           },
           { root: null, rootMargin: "-10% 0px -10% 0px", threshold: 0.12 }
         );
 
-        var targets = root.querySelectorAll("[data-reveal-item]:not(.in)");
-        for (var t = 0; t < targets.length; t++) io.observe(targets[t]);
-
-        // Повторное сканирование после полной загрузки
+        root.querySelectorAll("[data-reveal-item]:not(.in)").forEach((t) => io.observe(t));
         window.addEventListener(
           "load",
-          function () {
-            var rest = root.querySelectorAll("[data-reveal-item]:not(.in)");
-            for (var u = 0; u < rest.length; u++) io.observe(rest[u]);
+          () => {
+            root.querySelectorAll("[data-reveal-item]:not(.in)").forEach((t) => io.observe(t));
           },
           { once: true }
         );
       })();
-    </script><script is:inline>
+    </script>
+
+    <!-- 🪷 Аккордеон для блока "Условия" -->
+    <script is:inline>
+      (() => {
+        const terms = document.querySelectorAll(".term");
+        terms.forEach((term) => {
+          const header = term.querySelector(".term__header");
+          const content = term.querySelector(".term__content");
+          if (!header || !content) return;
+
+          // начальное состояние
+          content.style.maxHeight = "0";
+          content.style.overflow = "hidden";
+          content.style.transition = "max-height 0.4s ease, opacity 0.4s ease";
+          content.style.opacity = "0";
+
+          header.addEventListener("click", () => {
+            const isOpen = term.classList.toggle("open");
+            if (isOpen) {
+              content.style.maxHeight = content.scrollHeight + "px";
+              content.style.opacity = "1";
+            } else {
+              content.style.maxHeight = "0";
+              content.style.opacity = "0";
+            }
+          });
+        });
+      })();
+    </script>
+
+    <!-- 💫 Скролл к контактам -->
+    <script is:inline>
       (() => {
         const btn = document.querySelector("[data-scroll-to-contacts]");
         if (!btn) return;
-
         btn.addEventListener("click", (e) => {
           e.preventDefault();
           const target = document.getElementById("contacts");
           const infoCard = target?.querySelector(".contacts-info");
           if (!target) return;
-
-          // Плавный скролл
           target.scrollIntoView({ behavior: "smooth", block: "center" });
-
-          // Подсветка карточки
           if (infoCard) {
             infoCard.classList.add("highlight");
             setTimeout(() => infoCard.classList.remove("highlight"), 3000);
           }
-
-          // Обновляем URL-хэш (для SEO и навигации)
           history.replaceState(null, "", "#contacts");
-        });
-      })();
-      (() => {
-        const btn = document.querySelector("[data-toggle-terms]");
-        const wrapper = document.querySelector(".vac-terms-wrapper");
-        if (!btn || !wrapper) return;
-
-        btn.addEventListener("click", () => {
-          const isOpen = !wrapper.hasAttribute("hidden");
-          if (isOpen) {
-            wrapper.setAttribute("hidden", "");
-            btn.textContent = "Подробнее ↓";
-          } else {
-            wrapper.removeAttribute("hidden");
-            btn.textContent = "Скрыть ↑";
-            // плавная прокрутка к открытому блоку
-            wrapper.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
         });
       })();
     </script>

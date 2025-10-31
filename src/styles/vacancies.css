@@ -277,3 +277,28 @@
   transform: translateY(-3px);
   background: rgba(255, 43, 106, 0.08);
 }
+/* === Аккордеон блока "Условия" === */
+.term {
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(255, 43, 106, 0.06);
+  transition: all 0.3s ease;
+}
+
+/* Заголовок */
+.term__header {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-align: left;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s ease;
+}
