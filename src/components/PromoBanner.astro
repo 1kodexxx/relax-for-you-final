@@ -7,7 +7,14 @@ import "@/styles/promo-banner.css";
     <button class="promo-banner__close" type="button" aria-label="Закрыть">×</button>
 
     <div class="promo-banner__image">
-      <img src="/banner.jpg" alt="Relax GOLD" loading="lazy" decoding="async" />
+      <picture>
+        <!-- 📱 Для телефонов и планшетов -->
+        <source srcset="/banner-mobile.jpg" media="(max-width: 1023px)" type="image/jpeg" />
+        <!-- 💻 Для ноутбуков и десктопов -->
+        <source srcset="/banner-desktop.png" media="(min-width: 1024px)" type="image/png" />
+        <!-- 🧩 fallback (на случай если <picture> не поддерживается) -->
+        <img src="/banner.png" alt="Relax GOLD" loading="lazy" decoding="async" />
+      </picture>
     </div>
 
     <header class="promo-banner__header">
@@ -19,14 +26,14 @@ import "@/styles/promo-banner.css";
 
     <ul class="promo-banner__list">
       <li>
-        🔥 <b>Body EROTIC</b> по будням с 12:00–16:00 → <span class="price-banner">5000 ₽</span>
+        🔥 <b>Body EROTIC</b> по будням с 12:00 – 16:00 → <span class="price-banner">5000 ₽</span>
       </li>
       <li>💎 <b>Скидка 50%</b> на VIP в День Рождения</li>
       <li>🎁 Приведи 3 друзей — получи МАССАЖ в подарок</li>
     </ul>
 
     <div class="promo-banner__actions">
-      <a href="#booking" class="promo-banner__btn" data-booking-trigger>ЗАПИСАТЬСЯ СЕЙЧАС</a>
+      <a href="#booking" class="promo-banner__btn" data-booking-trigger> ЗАПИСАТЬСЯ СЕЙЧАС </a>
     </div>
   </div>
 </section>
@@ -35,45 +42,37 @@ import "@/styles/promo-banner.css";
   (() => {
     const banner = document.querySelector("#promo-banner");
     const closeBtn = banner?.querySelector(".promo-banner__close");
-    const gallery = document.querySelector("#gallery"); // 🎯 Блок, после которого появляем баннер
+    const gallery = document.querySelector("#gallery");
 
     if (!banner || !gallery) return;
 
-    // 🔮 Функция показа баннера
     const showBanner = () => {
       banner.hidden = false;
       banner.classList.add("visible");
     };
 
-    // 👀 Отслеживаем появление конца галереи в зоне видимости
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             showBanner();
-            observer.disconnect(); // один раз
+            observer.disconnect();
           }
         });
       },
-      {
-        root: null,
-        rootMargin: "0px 0px -10% 0px", // появляется чуть раньше конца
-        threshold: 0.1,
-      }
+      { rootMargin: "0px 0px -15% 0px", threshold: 0.1 }
     );
 
-    // 📍 Добавим “якорь” в конец галереи, если его нет
     let endMarker = gallery.querySelector("[data-gallery-end]");
     if (!endMarker) {
       endMarker = document.createElement("div");
-      endMarker.setAttribute("data-gallery-end", "");
+      endMarker.dataset.galleryEnd = "";
       endMarker.style.cssText = "width:100%;height:1px;";
       gallery.appendChild(endMarker);
     }
 
     observer.observe(endMarker);
 
-    // ❌ Закрытие баннера
     closeBtn?.addEventListener("click", () => {
       banner.classList.add("closing");
       setTimeout(() => banner.remove(), 300);
