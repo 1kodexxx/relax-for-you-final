@@ -1,21 +1,22 @@
 ---
-name: "Кира"
+name: "Марго"
 role: "SPA-мастер"
-experience: "5 лет опыта"
-rating: 4.9
-photo: "/assets/masters/margo.webp"
+experience: "3 года опыта"
+rating: 4.7
+photo: "/assets/masters/alexa.webp"
 gallery:
-  - "/assets/masters/margo.webp"
-  - "/assets/masters/margo2.webp"
-  - "/assets/masters/margo3.webp"
+  - "/assets/masters/alexa.webp"
+  - "/assets/masters/alexa2.webp"
+  - "/assets/masters/alexa3.webp"
 tags:
-  - "All-inclusive"
-  - "PREMIUM Massage"
-  - "ELITE-Erotic"
+  - "ЭКСПРЕСС Lingam"
+  - "Body EROTIC"
+  - "Восточный SPA"
+  - "Индивидуальный"
 description: >
-  32 года, рост 160 см, вес 60 кг. Кира — эксперт сочетания тайских техник с
+  29 лет, рост 160 см, вес 60 кг. Марго — эксперт сочетания тайских техник с
   элементами ароматерапии. Ее сеансы заряжают уверенностью и снимают усталость.
-whatsappMessage: "Здравствуйте! Хочу программу с Марго."
+whatsappMessage: "Привет! Хочу записаться на массаж к Марго."
+order: 1
 isFree: true
-order: 8
 ---

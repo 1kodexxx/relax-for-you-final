@@ -479,3 +479,15 @@
     transition: none !important;
   }
 }
+/* === Центрирование 5-го шага только на компьютере === */
+@media (min-width: 901px) {
+  .about-steps {
+    grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряд */
+    justify-items: center; /* выравнивает содержимое по центру */
+  }
+
+  .about-steps__item:nth-child(5) {
+    grid-column: 2 / span 2; /* размещает 5-й пункт по центру */
+    max-width: 600px;
+  }
+}
