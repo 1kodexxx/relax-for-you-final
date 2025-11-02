@@ -1,6 +1,6 @@
 ---
 name: "Марина"
-role: "Мастер энергетических практик"
+role: "SPA-мастер"
 experience: "1 год опыта"
 rating: 4.6
 photo: "/assets/masters/marina.webp"
