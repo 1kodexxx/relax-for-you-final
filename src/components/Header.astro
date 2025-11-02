@@ -272,5 +272,22 @@ import "@/styles/header.css";
     };
     mqDesktop.addEventListener?.("change", onBreakPoint);
     mqDesktop.addListener?.(onBreakPoint); // Safari <16
+
+    /* ===== Обновление страницы без заметного скролла ===== */
+    const brandLink = document.querySelector(".rfy-header__brand");
+    if (brandLink) {
+      brandLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Если уже на главной — перезагрузка без "прыжка"
+        if (location.pathname === "/" || location.pathname === "/index.html") {
+          // Удаляем сохранённую позицию скролла, чтобы при reload открывалось с самого верха
+          history.scrollRestoration = "manual";
+          location.reload();
+        } else {
+          // Если не на главной — просто переход
+          location.href = "/";
+        }
+      });
+    }
   })();
 </script>
