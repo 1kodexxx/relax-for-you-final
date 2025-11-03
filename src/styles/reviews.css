@@ -328,3 +328,59 @@
     height: 14px;
   }
 }
+/* === Кнопка "Показать больше" в отзывах === */
+.rv-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 2.5rem;
+}
+
+/* Используем общий стиль, как у мастеров */
+.rv-more .rv-btn-ghost {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 42px;
+  border-radius: 999px;
+  border: 2px solid var(--rose-hot, #ff2b6a);
+  background: transparent;
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 100;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.35s var(--e1),
+    border-color 0.35s var(--e1),
+    box-shadow 0.4s var(--e1),
+    transform 0.3s var(--e1),
+    background 0.4s var(--e1);
+  backdrop-filter: blur(12px);
+}
+
+/* При наведении — мягкое сияние */
+.rv-more .rv-btn-ghost:hover,
+.rv-more .rv-btn-ghost:focus-visible {
+  color: #fff;
+  border-color: color-mix(in oklab, var(--rose-hot) 70%, #ffffff 20%);
+  box-shadow:
+    0 0 22px rgba(255, 43, 106, 0.6),
+    0 10px 32px rgba(255, 43, 106, 0.25);
+  transform: translateY(-3px);
+  background: rgba(255, 43, 106, 0.08);
+}
+
+.rv-more .rv-btn-ghost:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.32);
+  outline-offset: 4px;
+}
+
+.rv-more .rv-btn-ghost:active {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 44px rgba(6, 0, 12, 0.4);
+}

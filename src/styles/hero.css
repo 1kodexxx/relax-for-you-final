@@ -204,3 +204,74 @@ html:not(.rfy-ready) .reveal {
   font-size: clamp(1rem, 2vw, 1.3rem);
   backdrop-filter: blur(6px);
 }
+/* === Плашка "Закрыто" (под соцсетями) === */
+.closed-notice {
+  position: relative;
+  margin: 2rem auto 0;
+  width: min(92%, 720px);
+  padding: 1rem 1.4rem;
+  border-radius: 14px;
+  background: rgba(24, 18, 23, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 43, 106, 0.35);
+  color: var(--text-primary);
+  box-shadow:
+    0 0 25px rgba(255, 43, 106, 0.25),
+    inset 0 0 12px rgba(255, 43, 106, 0.1);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+  text-align: center;
+  z-index: 3;
+}
+
+.closed-notice.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.closed-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  line-height: 1.5;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  text-align: center;
+}
+
+.closed-inner b {
+  color: var(--warm-gold);
+}
+
+.status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--rose-hot);
+  box-shadow: 0 0 10px rgba(255, 43, 106, 0.6);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 43, 106, 0.6);
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.75;
+    box-shadow: 0 0 18px rgba(255, 43, 106, 0.8);
+  }
+}
+
+@media (max-width: 520px) {
+  .closed-inner {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

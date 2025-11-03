@@ -1,0 +1,131 @@
+:root {
+  --rose-hot: #ff2b6a;
+  --warm-gold: #f7c4a5;
+  --surface-variant: #241a20;
+  --text-primary: #f8e9f0;
+}
+
+/* === Контейнер === */
+.floating-controls {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* === Общий стиль кнопок === */
+.float-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--rose-hot);
+  background: radial-gradient(
+    100% 100% at 50% 100%,
+    rgba(24, 18, 23, 0.9) 0%,
+    rgba(14, 10, 11, 0.7) 100%
+  );
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 15px rgba(255, 43, 106, 0.4),
+    inset 0 0 12px rgba(255, 43, 106, 0.25);
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* === Позиции === */
+.float-btn.left {
+  left: 1.5rem;
+}
+
+.float-btn.right {
+  right: 1.5rem;
+}
+
+/* === Появление === */
+.float-btn.visible,
+#musicToggle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Hover эффект === */
+.float-btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 25px rgba(255, 43, 106, 0.6),
+    inset 0 0 15px rgba(255, 43, 106, 0.3);
+}
+
+/* === Активная кнопка музыки === */
+.float-btn.active {
+  border-color: var(--warm-gold);
+  color: var(--warm-gold);
+  box-shadow:
+    0 0 25px rgba(247, 196, 165, 0.6),
+    inset 0 0 15px rgba(247, 196, 165, 0.3);
+}
+
+/* === Кнопка "Наверх" появляется при скролле === */
+#scrollTopBtn {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+#scrollTopBtn.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Адаптив === */
+@media (max-width: 480px) {
+  .float-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 1.2rem;
+    bottom: 1rem;
+  }
+
+  .float-btn.left {
+    left: 1rem;
+  }
+
+  .float-btn.right {
+    right: 1rem;
+  }
+}
+/* === SVG иконка музыки === */
+.icon-music {
+  width: 24px;
+  height: 24px;
+  color: var(--text-primary);
+  filter: drop-shadow(0 0 8px rgba(255, 43, 106, 0.6));
+  transition:
+    color 0.3s ease,
+    filter 0.3s ease;
+}
+
+/* === При наведении === */
+.float-btn:hover .icon-music {
+  filter: drop-shadow(0 0 12px rgba(255, 43, 106, 0.9));
+}
+
+/* === При активной музыке (золотое свечение) === */
+.float-btn.active .icon-music {
+  color: var(--warm-gold);
+  filter: drop-shadow(0 0 10px rgba(247, 196, 165, 0.8));
+}

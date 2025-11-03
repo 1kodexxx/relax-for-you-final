@@ -137,10 +137,12 @@ function getPhotos(r: {
   rating?: number;
   source?: string;
   text?: string;
-  photos?: string[];
+  photos?: any;
 }) {
   return Array.isArray(r.photos) ? r.photos : [];
 }
+
+const INITIAL_VISIBLE = 6;
 ---
 
 <section id="reviews" class="rv-hero" data-reveal-scope>
@@ -169,13 +171,16 @@ function getPhotos(r: {
   </div>
 </section>
 
-<section class="rv-list">
+<section class="rv-list" data-initial-count={INITIAL_VISIBLE}>
   <div class="container rv-grid" id="rvGrid" data-reveal-group data-stagger="100">
     {
-      REVIEWS.map((r) => (
+      REVIEWS.map((r, index) => (
         <article
           class="rv-card"
           data-reveal-item
+          data-review-card
+          hidden={index >= INITIAL_VISIBLE}
+          style={index >= INITIAL_VISIBLE ? "display:none" : ""}
           tabindex="0"
           data-source={r.source}
           data-rating={r.rating}
@@ -193,7 +198,6 @@ function getPhotos(r: {
                 {new Date(r.date).toLocaleDateString("ru-RU")}
               </time>
 
-              {/* ⭐ Блок рейтинга */}
               <div class="rv-stars" aria-label={`Оценка ${r.rating} из 5`}>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <svg
@@ -216,13 +220,23 @@ function getPhotos(r: {
 
           {getPhotos(r).map((p: string) => (
             <button class="rv-ph" data-src={p} aria-label="Открыть фото">
-              <img loading="lazy" decoding="async" src={p} alt="" />
+              <img loading="lazy" decoding="async" src={String(p)} alt="" />
             </button>
           ))}
         </article>
       ))
     }
   </div>
+
+  {
+    REVIEWS.length > INITIAL_VISIBLE && (
+      <div class="rv-more">
+        <button class="rv-btn-ghost" data-show-more type="button">
+          Показать больше
+        </button>
+      </div>
+    )
+  }
 </section>
 
 <section class="rv-cta" data-reveal-group data-stagger="180">
@@ -244,11 +258,47 @@ function getPhotos(r: {
 </div>
 
 <script is:inline>
-  (function () {
-    var grid = document.getElementById("rvGrid");
+  (() => {
+    const grid = document.getElementById("rvGrid");
     if (!grid) return;
 
-    // Hover/Press
+    const section = document.querySelector(".rv-list");
+    const cards = Array.from(section.querySelectorAll("[data-review-card]"));
+    const showMoreBtn = section.querySelector("[data-show-more]");
+    const initialVisible = Number(section.getAttribute("data-initial-count") ?? "6");
+    let visibleCount = Math.min(initialVisible, cards.length);
+
+    // === Начальное состояние ===
+    cards.forEach((card, i) => {
+      card.hidden = i >= visibleCount;
+      card.style.display = i >= visibleCount ? "none" : "";
+    });
+
+    // === Кнопка "Показать больше" ===
+    if (showMoreBtn) {
+      const updateButton = () => {
+        if (visibleCount >= cards.length) {
+          showMoreBtn.parentElement?.remove();
+        }
+      };
+
+      updateButton();
+
+      showMoreBtn.addEventListener("click", () => {
+        const hiddenCards = cards.slice(visibleCount);
+        hiddenCards.forEach((card) => {
+          card.hidden = false;
+          card.style.display = "";
+          card.style.animation = "none";
+          void card.offsetWidth;
+          card.style.removeProperty("animation");
+        });
+        visibleCount = cards.length;
+        updateButton();
+      });
+    }
+
+    // === Hover/Press эффекты ===
     function pressOn(el) {
       el.classList.add("is-press");
     }
@@ -256,23 +306,24 @@ function getPhotos(r: {
       el.classList.remove("is-press");
     }
 
-    grid.addEventListener("mousedown", function (e) {
-      var card = e.target.closest ? e.target.closest(".rv-card") : null;
+    grid.addEventListener("mousedown", (e) => {
+      const card = e.target.closest(".rv-card");
       if (!card) return;
       pressOn(card);
-      var up = function () {
+      const up = () => {
         pressOff(card);
         window.removeEventListener("mouseup", up);
       };
       window.addEventListener("mouseup", up, { once: true });
     });
+
     grid.addEventListener(
       "touchstart",
-      function (e) {
-        var card = e.target.closest ? e.target.closest(".rv-card") : null;
+      (e) => {
+        const card = e.target.closest(".rv-card");
         if (!card) return;
         pressOn(card);
-        var off = function () {
+        const off = () => {
           pressOff(card);
           window.removeEventListener("touchend", off);
           window.removeEventListener("touchcancel", off);
@@ -282,46 +333,29 @@ function getPhotos(r: {
       },
       { passive: true }
     );
-    grid.addEventListener("keydown", function (e) {
-      var card = e.target.closest ? e.target.closest(".rv-card") : null;
-      if (!card) return;
-      if (e.key === "Enter" || e.key === " " || e.keyCode === 13 || e.keyCode === 32) {
-        e.preventDefault();
-        pressOn(card);
-        setTimeout(function () {
-          pressOff(card);
-        }, 150);
-      }
-    });
 
-    // Лайтбокс
-    var lb = document.getElementById("rvLightbox");
-    var lbImg = document.getElementById("rvLbImg");
-    grid.addEventListener("click", function (e) {
-      var ph = e.target.closest ? e.target.closest(".rv-ph") : null;
+    // === Лайтбокс ===
+    const lb = document.getElementById("rvLightbox");
+    const lbImg = document.getElementById("rvLbImg");
+    grid.addEventListener("click", (e) => {
+      const ph = e.target.closest(".rv-ph");
       if (!ph) return;
-      var src =
-        ph.getAttribute("data-src") || (ph.querySelector("img") && ph.querySelector("img").src);
+      const src = ph.dataset.src || ph.querySelector("img")?.src;
       if (!src) return;
       lbImg.src = src;
       lb.hidden = false;
       document.body.style.overflow = "hidden";
     });
-    lb.addEventListener("click", function (e) {
-      if (
-        e.target.id === "rvLightbox" ||
-        (e.target.classList && e.target.classList.contains("rv-lb-close"))
-      ) {
+    lb.addEventListener("click", (e) => {
+      if (e.target.id === "rvLightbox" || e.target.classList.contains("rv-lb-close")) {
         lb.hidden = true;
         document.body.style.overflow = "";
       }
     });
 
-    // Reveal on scroll — общий скрипт уже есть, но локально подстрахуемся:
+    // === Fallback без IntersectionObserver ===
     if (!("IntersectionObserver" in window)) {
-      Array.prototype.forEach.call(document.querySelectorAll("[data-reveal-item]"), function (el) {
-        el.classList.add("in");
-      });
+      document.querySelectorAll("[data-reveal-item]").forEach((el) => el.classList.add("in"));
     }
   })();
 </script>
