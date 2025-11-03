@@ -417,3 +417,33 @@
     filter: none !important;
   }
 }
+/* === Особая ссылка "Правила предоставления сервиса" === */
+.mobile-terms {
+  margin-top: 1.6rem;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.terms-link {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+}
+
+.terms-link:hover {
+  color: var(--rose-hot);
+  text-shadow: 0 0 8px rgba(255, 43, 106, 0.4);
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .mobile-terms {
+    margin-top: 1.2rem;
+  }
+  .terms-link {
+    font-size: 0.8rem;
+  }
+}
