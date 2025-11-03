@@ -223,3 +223,41 @@
     height: 320px;
   }
 }
+/* === Контакты и карта (адаптивная перестановка) === */
+.contacts-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+/* --- по умолчанию (desktop) --- */
+.contacts-body {
+  order: 1;
+}
+.contacts-map {
+  order: 2;
+}
+
+/* --- на мобильных (до 768px): контакты выше карты --- */
+@media (max-width: 768px) {
+  .contacts-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contacts-body {
+    order: 1;
+  }
+
+  .contacts-map {
+    order: 2;
+  }
+}
+
+/* Дополнительно — если на десктопе хочешь наоборот (карта справа, контакты слева) */
+@media (min-width: 769px) {
+  .contacts-card {
+    display: flex;
+    flex-direction: column;
+  }
+}

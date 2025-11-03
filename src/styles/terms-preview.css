@@ -1,0 +1,49 @@
+@import "@/styles/variables.css";
+
+/* === Секция === */
+.terms-preview {
+  position: relative;
+  padding: 72px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--g-velvet);
+}
+
+.terms-preview .container {
+  width: min(100% - 32px, var(--container, 1184px));
+  margin-inline: auto;
+}
+
+.terms-head {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.terms-head .eyebrow {
+  display: inline-block;
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #bdb4bb;
+}
+
+.terms-head .title {
+  margin: 10px 0 12px;
+  font-size: clamp(1.8rem, 3.6vw, 2.4rem);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(255, 43, 106, 0.25);
+}
+
+.terms-head .subtitle {
+  color: var(--text-secondary);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Центровка кнопки */
+.terms-preview__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}

@@ -143,3 +143,116 @@
     gap: 28px;
   }
 }
+/* === Кнопка "Правила оказания услуг" === */
+.footer-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.8rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-cta__button {
+  display: inline-block;
+  padding: 0.9rem 2.4rem;
+  border-radius: 12px;
+  border: 1.8px solid var(--rose-hot, #fff);
+  color: var(--rose-hot, #fff);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: transparent;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.45s ease,
+    transform 0.25s ease;
+}
+
+.footer-cta__button:hover {
+  color: #fff;
+  background: var(--rose-hot, #fff);
+  box-shadow:
+    0 0 24px rgba(255, 43, 106, 0.45),
+    0 4px 10px rgba(255, 43, 106, 0.25);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 700px) {
+  .footer-cta {
+    margin-top: 1.4rem;
+    padding-top: 1rem;
+  }
+
+  .footer-cta__button {
+    width: 100%;
+    max-width: 340px;
+  }
+}
+/* === Кнопка перед футером === */
+.footer-precta {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: -1rem; /* чуть перекрывает верх футера */
+  position: relative;
+  z-index: 10;
+}
+
+/* === Неброская ссылка перед футером === */
+.footer-precta {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.footer-precta__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 42px;
+  border-radius: 999px;
+  border: 2px solid var(--text-primary, #fff);
+  background: transparent;
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 100;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.35s var(--e1),
+    border-color 0.35s var(--e1),
+    box-shadow 0.4s var(--e1),
+    transform 0.3s var(--e1),
+    background 0.4s var(--e1);
+  backdrop-filter: blur(12px);
+}
+
+.footer-precta__link:hover {
+  opacity: 1;
+  color: var(--rose-hot, #fff);
+}
+
+/* На мобильных делаем чуть больше отступ и центрируем */
+@media (max-width: 700px) {
+  .footer-precta {
+    margin-top: 2.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .footer-precta__link {
+    font-size: 0.85rem;
+  }
+}
