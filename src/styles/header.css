@@ -446,4 +446,50 @@
   .terms-link {
     font-size: 0.8rem;
   }
+} /* 1) Не переносить пункты меню */
+.rfy-header__menu a {
+  white-space: nowrap;
+}
+
+/* 2) Чуть ужать зазоры и шрифт, чтобы всё влезло */
+@media (max-width: 1200px) {
+  .rfy-header__menu {
+    gap: 20px;
+  }
+  .rfy-header__menu a {
+    font-size: 14.5px;
+    padding: 6px 2px;
+  }
+  .rfy-cta-desktop {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
+
+/* 3) На более узких экранах увеличим долю колонок для меню */
+@media (max-width: 1100px) {
+  .rfy-header__brand {
+    grid-column: 1 / span 2;
+  } /* было span 3 */
+  .rfy-header__menu {
+    grid-column: 3 / span 7;
+  } /* было span 6 */
+  .rfy-header__right {
+    grid-column: 10 / span 3;
+  } /* без изменений */
+
+  .rfy-header__menu {
+    gap: 16px;
+  }
+  .rfy-header__menu a {
+    font-size: 14px;
+  }
+}
+
+/* 4) Если всё ещё тесно — ещё компактнее CTA на грани десктопа */
+@media (max-width: 1024px) {
+  .rfy-cta-desktop {
+    padding: 5px 8px;
+    font-size: 13px;
+  }
 }

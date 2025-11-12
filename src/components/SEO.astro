@@ -1,16 +1,24 @@
 ---
 /**
- * 🌐 SEO-компонент для проекта Relax For You
- * Использование:
- * <SEO title="..." description="..." image="/assets/og-image.jpg" url="..." />
+ * 🌐 SEO для Relax For You — версия с упором на Яндекс
+ * - meta keywords оставляем (Яндекс почти не учитывает, но не мешает)
+ * - добавлены: yandex-verification, robots/noindex, hreflang, улучшенный OG/Twitter
+ * - JSON-LD: два филиала (DaySpa), geo + часы, ссылки sameAs
+ * - опционально: Яндекс.Метрика (через prop)
  */
 
 export interface Props {
   title?: string;
   description?: string;
-  image?: string;
-  url?: string;
+  image?: string;     // абсолютный или от корня
+  url?: string;       // канонический URL страницы
   keywords?: string;
+  robots?: string;    // напр. "index,follow" | "noindex,nofollow"
+  locale?: string;    // "ru_RU"
+  siteName?: string;  // "Relax For You"
+  hreflang?: string;  // "ru"
+  yandexVerification?: string; // код в Яндекс.Вебмастере
+  yandexMetrikaId?: string;    // ID счётчика (например, "12345678")
 }
 
 const {
@@ -18,58 +26,126 @@ const {
   description = "Массаж и SPA-программы от сертифицированных мастеров. Эстетика, комфорт и полное расслабление. Онлайн-запись и подарочные сертификаты.",
   image = "/assets/og-default.jpg",
   url = "https://relaxmassage51.ru",
-  keywords = "массаж Мурманск, Relax For You, SPA, премиум массаж, салон красоты, релакс массаж, relaxmassage51, массажный салон Мурманск",
+  keywords = "массаж Мурманск, Relax For You, SPA, премиум массаж, салон красоты, релакс массаж, relaxmassage51, массажный салон Мурманск, массаж для двоих, антицеллюлитный массаж, лимфодренажный массаж, запись на массаж",
+  robots = "index,follow",
+  locale = "ru_RU",
+  siteName = "Relax For You",
+  hreflang = "ru",
+  yandexVerification,
+  yandexMetrikaId,
 } = Astro.props;
+
+// Помощники для абсолютных ссылок в OG
+const absolute = (p: string) => p?.startsWith("http") ? p : `${url.replace(/\/$/, "")}${p.startsWith("/") ? "" : "/"}${p}`;
+const ogImage = absolute(image);
 ---
-<!-- 🧭 Основные мета-теги -->
+
+<!-- 🧭 Базовые мета -->
 <title>{title}</title>
 <meta name="description" content={description} />
 <meta name="keywords" content={keywords} />
+<meta name="robots" content={robots} />
 <link rel="canonical" href={url} />
+<link rel="alternate" hreflang={hreflang} href={url} />
 
-<!-- ⚙️ Open Graph (для соцсетей, Telegram, VK) -->
+<!-- ✅ Верификация Яндекса (если передали код) -->
+{yandexVerification && <meta name="yandex-verification" content={yandexVerification} />}
+
+<!-- ⚙️ Open Graph -->
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content={siteName} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={url} />
-<meta property="og:image" content={image} />
-<meta property="og:site_name" content="Relax For You" />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:secure_url" content={ogImage} />
+<meta property="og:locale" content={locale} />
 
-<!-- 🐦 Twitter Card -->
+<!-- 🐦 Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={image} />
+<meta name="twitter:image" content={ogImage} />
 
-<!-- 🧩 JSON-LD разметка для Google -->
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Relax For You",
-    "image": "https://relaxmassage51.ru{image}",
-    "url": "https://relaxmassage51.ru",
-    "telephone": "+7-911-332-29-17",
-    "priceRange": "₽₽₽",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "ул. Ленинградская, 17",
-      "addressLocality": "Мурманск",
-      "addressCountry": "RU"
+<!-- 🧩 JSON-LD: сеть из двух филиалов как DaySpa -->
+<script type="application/ld+json" is:inline>
+{JSON.stringify({
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"DaySpa",
+      "@id": `${url}#org`,
+      "name":"Relax For You",
+      "alternateName":"Эстетик SPA",
+      "url": url,
+      "image": ogImage,
+      "telephone":"+7-911-332-29-17",
+      "priceRange":"₽₽₽",
+      "sameAs":[
+        "https://t.me/Relax4YOU51",
+        "https://wa.me/79113322917"
+      ]
     },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-      "opens": "12:00",
-      "closes": "00:00"
+    {
+      "@type":"DaySpa",
+      "name":"Relax For You — Трудовых резервов",
+      "parentOrganization": {"@id": `${url}#org`},
+      "url": url,
+      "image": ogImage,
+      "telephone":"+7-911-332-29-17",
+      "address":{
+        "@type":"PostalAddress",
+        "streetAddress":"ул. Трудовых резервов, 9",
+        "addressLocality":"Мурманск",
+        "addressRegion":"Мурманская область",
+        "postalCode":"183000",
+        "addressCountry":"RU"
+      },
+      "geo":{
+        "@type":"GeoCoordinates",
+        "latitude": 68.96,
+        "longitude": 33.08
+      },
+      "openingHoursSpecification":[{
+        "@type":"OpeningHoursSpecification",
+        "dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens":"12:00",
+        "closes":"00:00"
+      }]
     },
-    "sameAs": [
-      "https://t.me/Relax4YOU51",
-      "https://wa.me/79113322917"
-    ]
-  }
+    {
+      "@type":"DaySpa",
+      "name":"Relax For You — Карла Маркса",
+      "parentOrganization": {"@id": `${url}#org`},
+      "url": url,
+      "image": ogImage,
+      "telephone":"+7-911-332-29-17",
+      "address":{
+        "@type":"PostalAddress",
+        "streetAddress":"ул. Карла Маркса, 6/1",
+        "addressLocality":"Мурманск",
+        "addressRegion":"Мурманская область",
+        "postalCode":"183000",
+        "addressCountry":"RU"
+      },
+      "geo":{
+        "@type":"GeoCoordinates",
+        "latitude": 68.97,
+        "longitude": 33.08
+      },
+      "openingHoursSpecification":[{
+        "@type":"OpeningHoursSpecification",
+        "dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens":"12:00",
+        "closes":"00:00"
+      }]
+    }
+  ]
+}, null, 0)}
 </script>
 
-<!-- 🪩 Цветовая тема для поисковиков -->
+<!-- 🪩 Цветовая тема -->
 <meta name="theme-color" content="#0e0a0b" />
 <meta name="color-scheme" content="dark" />
+
+
