@@ -1,0 +1,375 @@
+---
+/**
+ * CookieConsent.astro
+ * - По центру, полностью адаптивно по ширине/высоте
+ * - Текст как на 2-м скрине
+ * - Кнопка контурная
+ * - Прод: плавное закрытие + удаление из DOM + лок скролла
+ * - Флаг в localStorage
+ * - Debug: ?cc=1 принудительно показывает
+ */
+
+const {
+  storageKey = "rfy_cookie_consent_v1",
+  policyHref = "/terms",
+  title = "Просмотреть, продолжая…",
+  text = `Продолжая использовать наш сайт, вы даёте согласие на обработку файлов cookie и пользовательских данных
+(сведения о местоположении; тип и версия ОС; тип и версия браузера; тип устройства и разрешение экрана; источник откуда пришел пользователь; с какого сайта или по какой рекламе; язык ОС и браузера; какие страницы открывает пользователь и на какие кнопки нажимает пользователь; ip-адрес) с помощью интернет-сервисов Яндекс.Метрика, Google Analytics и Facebook в целях функционирования сайта, проведения ретаргетинга, проведения статистических исследований и обзоров.
+`,
+} = Astro.props;
+---
+
+<section class="cc" data-cc-root aria-live="polite" aria-label="Уведомление о cookies" hidden>
+  <div
+    class="cc__card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cc-title"
+    aria-describedby="cc-text"
+  >
+    <div class="cc__head">
+      <div class="cc__badge" aria-hidden="true"></div>
+      <h3 class="cc__title" id="cc-title">{title}</h3>
+    </div>
+
+    <p class="cc__text" id="cc-text">
+      {text}
+      <span class="cc__more"><a href={policyHref}>Подробнее</a></span>
+    </p>
+
+    <div class="cc__actions">
+      <button class="cc__btn" type="button" data-cc-accept>СОГЛАСЕН</button>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ storageKey }}>
+    (function () {
+      const root = document.querySelector("[data-cc-root]");
+      if (!root) return;
+
+      const lockScroll = () => document.documentElement.classList.add("cc-lock");
+      const unlockScroll = () => document.documentElement.classList.remove("cc-lock");
+
+      const hasConsent = () => {
+        try {
+          return localStorage.getItem(storageKey) === "1";
+        } catch (_) {
+          return false;
+        }
+      };
+
+      const setConsent = () => {
+        try {
+          localStorage.setItem(storageKey, "1");
+        } catch (_) {}
+      };
+
+      // ✅ Debug: ?cc=1 принудительно показывает (удобно тестировать)
+      const forceShow = (() => {
+        try {
+          const u = new URL(window.location.href);
+          return u.searchParams.get("cc") === "1";
+        } catch (_) {
+          return false;
+        }
+      })();
+
+      // Если согласие уже есть и не debug — не показываем
+      if (hasConsent() && !forceShow) {
+        unlockScroll();
+        root.remove();
+        return;
+      }
+
+      // ✅ Показ
+      root.hidden = false;
+      root.classList.add("cc--open");
+      lockScroll();
+
+      let closing = false;
+
+      const close = () => {
+        if (closing) return;
+        closing = true;
+
+        setConsent();
+
+        // ✅ Закрытие с анимацией
+        root.classList.remove("cc--open");
+        root.classList.add("cc--hide");
+        root.setAttribute("aria-hidden", "true");
+
+        const removeNow = () => {
+          unlockScroll();
+          if (root && root.parentNode) root.parentNode.removeChild(root);
+        };
+
+        // transitionend может не сработать — ставим фолбэк
+        let done = false;
+        const onEnd = () => {
+          if (done) return;
+          done = true;
+          root.removeEventListener("transitionend", onEnd);
+          removeNow();
+        };
+
+        root.addEventListener("transitionend", onEnd);
+        window.setTimeout(onEnd, 320);
+      };
+
+      // ✅ Делегирование клика — всегда сработает
+      root.addEventListener("click", (e) => {
+        const t = e.target;
+        if (!(t instanceof Element)) return;
+        if (t.closest("[data-cc-accept]")) close();
+      });
+
+      window.addEventListener("pagehide", unlockScroll, { once: true });
+    })();
+  </script>
+
+  <style>
+    /* Лок скролла, пока окно активно */
+    html.cc-lock,
+    html.cc-lock body {
+      overflow: hidden;
+      height: 100%;
+      overscroll-behavior: none;
+      touch-action: none;
+    }
+
+    /* Центр + адаптив + safe-area */
+    .cc {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+
+      display: grid;
+      place-items: center;
+
+      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+        max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+
+      background: rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s var(--e1);
+    }
+
+    .cc--open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cc--hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cc__card {
+      position: relative;
+      width: min(620px, 100%);
+      max-width: 100%;
+
+      /* чтобы никогда не вылезало по высоте */
+      max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow: hidden;
+
+      background: linear-gradient(180deg, rgba(24, 18, 23, 0.92) 0%, rgba(14, 10, 11, 0.9) 100%);
+      border: 1px solid rgba(59, 44, 53, 0.8);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      padding: 16px 16px 14px;
+
+      transform: translateY(8px) scale(0.985);
+      opacity: 0;
+      transition:
+        opacity 0.2s var(--e1),
+        transform 0.2s var(--e1);
+    }
+
+    .cc--open .cc__card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .cc--hide .cc__card {
+      opacity: 0;
+      transform: translateY(10px) scale(0.99);
+    }
+
+    /* Глянец */
+    .cc__card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 60%);
+      pointer-events: none;
+    }
+
+    .cc__head {
+      display: grid;
+      grid-template-columns: 14px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cc__badge {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: var(--g-desire);
+      box-shadow: 0 10px 28px rgba(255, 43, 106, 0.35);
+    }
+
+    .cc__title {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.25;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      opacity: 0.92;
+      font-weight: 700;
+    }
+
+    .cc__chat {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255, 79, 167, 0.35), rgba(24, 18, 23, 0.4) 60%),
+        rgba(255, 79, 167, 0.12);
+      border: 1px solid rgba(255, 79, 167, 0.22);
+      color: rgba(248, 233, 240, 0.92);
+      box-shadow: 0 14px 38px rgba(255, 43, 106, 0.22);
+      text-decoration: none;
+      transition:
+        transform 0.18s var(--e1),
+        box-shadow 0.18s var(--e1);
+    }
+
+    .cc__chat:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-rose);
+    }
+
+    .cc__text {
+      margin: 0;
+      color: rgba(248, 233, 240, 0.82);
+      font-size: 12px;
+      line-height: 1.45;
+
+      overflow: auto;
+      padding-right: 6px;
+
+      position: relative;
+      z-index: 1;
+
+      max-height: calc(
+        100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px - 14px -
+          54px - 52px
+      );
+    }
+
+    .cc__text::-webkit-scrollbar {
+      width: var(--sb-w);
+      height: var(--sb-w);
+    }
+    .cc__text::-webkit-scrollbar-thumb {
+      border-radius: var(--sb-r);
+      background: rgba(190, 77, 111, 0.55);
+      border: 3px solid rgba(0, 0, 0, 0);
+      background-clip: padding-box;
+    }
+
+    .cc__more {
+      display: inline-block;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+    .cc__more a {
+      color: var(--neon-pink);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(255, 79, 167, 0.55);
+    }
+
+    .cc__actions {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Контурная кнопка */
+    .cc__btn {
+      appearance: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 11px 18px;
+
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      font-size: 12px;
+      color: var(--text-primary);
+
+      background: transparent;
+      border: 1.5px solid rgba(255, 79, 167, 0.65);
+
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 79, 167, 0.15),
+        0 8px 24px rgba(255, 79, 167, 0.18);
+
+      transition:
+        transform 0.18s var(--e1),
+        box-shadow 0.18s var(--e1),
+        background 0.18s var(--e1);
+    }
+
+    .cc__btn:hover {
+      background: rgba(255, 79, 167, 0.08);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 79, 167, 0.25),
+        0 14px 42px rgba(255, 79, 167, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .cc__btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .cc__btn:focus-visible {
+      outline: 2px solid rgba(255, 79, 167, 0.5);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 520px) {
+      .cc__card {
+        width: 100%;
+        border-radius: var(--radius-lg);
+        padding: 14px 14px 12px;
+      }
+    }
+
+    @supports not (height: 100dvh) {
+      .cc__card {
+        max-height: calc(100vh - 28px);
+      }
+      .cc__text {
+        max-height: calc(100vh - 28px - 16px - 14px - 54px - 52px);
+      }
+    }
+  </style>
+</section>

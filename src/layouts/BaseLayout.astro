@@ -8,6 +8,7 @@ import SEO from "@/components/SEO.astro";
 import PromoBanner from "@/components/PromoBanner.astro";
 import VacancyModal from "@/components/VacancyModal.astro";
 import FloatingButtons from "@/components/FloatingButtons.astro";
+import CookieConsent from "@/components/CookieConsent.astro";
 
 import "@/styles/variables.css";
 import "@/styles/globals.css";
@@ -15,7 +16,7 @@ import "@/styles/animations.css";
 
 const {
   title = "Relax For You — Премиальные массажные салоны · Мурманск",
-  description = "Сенсуальная эстетика, сертифицированные мастера и онлайн-запись.",
+  description = "Расслабляющая энергетика, профессиональные мастера и онлайн-запись.",
   image = "/assets/og-default.jpg",
   page = "home",
 } = Astro.props;
@@ -256,5 +257,6 @@ const {
 
     <PromoBanner />
     <FloatingButtons />
+    <CookieConsent storageKey="rfy_cookie_consent_v2" />
   </body>
 </html>

@@ -26,7 +26,7 @@ const {
     </header>
 
     <form class="booking-modal__form" data-form novalidate>
-      <!-- honeypot -->
+      <!-- 🐝 honeypot -->
       <input
         type="text"
         name="company"
@@ -95,8 +95,11 @@ const {
       </div>
 
       <p class="booking-modal__policy">
-        Отправляя отзыв, вы соглашаетесь с условиями обработки персональных данных и политикой
-        конфиденциальности Relax For You.
+        Отправляя отзыв, вы подтверждаете своё согласие на обработку персональных данных, в том
+        числе на их передачу в мессенджер Telegram и иные используемые сервисы, в соответствии с
+        <a href="/privacy" class="booking-modal__policy-link">
+          Политикой конфиденциальности Relax For You
+        </a>.
       </p>
 
       <div class="booking-modal__feedback" data-feedback role="status" aria-live="polite" hidden>
@@ -111,7 +114,7 @@ const {
 <!-- ================== JS ================== -->
 <script is:inline>
   (() => {
-    const WEBHOOK_URL = "https://eoiolinmefd6i6s.m.pipedream.net"; // ← твой вебхук
+    const WEBHOOK_URL = "https://eoiolinmefd6i6s.m.pipedream.net"; // тот же вебхук
 
     const modal = document.querySelector("[data-review-modal]");
     if (!modal) return;
@@ -127,31 +130,35 @@ const {
     const phoneInput = modal.querySelector("#review-phone");
     const defaultSubmitText = submitBtn?.textContent || "";
 
-    const lockScroll = () => (document.body.style.overflow = "hidden");
-    const unlockScroll = () => (document.body.style.overflow = "");
+    const lockScroll = () => {
+      document.body.style.overflow = "hidden";
+    };
 
-    const setFeedback = (msg, type) => {
+    const unlockScroll = () => {
+      document.body.style.overflow = "";
+    };
+
+    const setFeedback = (msg = "", type = "") => {
       if (!feedback) return;
       feedback.textContent = msg || "";
-      feedback.classList.remove("is-success", "is-error", "is-visible");
-      if (msg) {
-        if (type === "success") feedback.classList.add("is-success");
-        if (type === "error") feedback.classList.add("is-error");
-        feedback.classList.add("is-visible");
-        feedback.hidden = false;
-        feedback.style.display = "block";
-      } else {
+      feedback.classList.remove("is-success", "is-error");
+      if (!msg) {
         feedback.hidden = true;
-        feedback.style.display = "none";
+        return;
       }
+      if (type === "success") feedback.classList.add("is-success");
+      if (type === "error") feedback.classList.add("is-error");
+      feedback.hidden = false;
     };
 
     const showOverlayMessage = (msg, type = "success", duration = 2500) => {
       if (!overlayMsg) return;
       overlayMsg.textContent = msg;
       overlayMsg.classList.remove("is-success", "is-error", "is-visible");
+
       if (type === "success") overlayMsg.classList.add("is-success");
       if (type === "error") overlayMsg.classList.add("is-error");
+
       overlayMsg.hidden = false;
       requestAnimationFrame(() => overlayMsg.classList.add("is-visible"));
       setTimeout(() => {
@@ -184,12 +191,16 @@ const {
         open();
       })
     );
+
     closeBtns.forEach((b) => b.addEventListener("click", close));
     backdrop?.addEventListener("click", close);
-    document.addEventListener(
-      "keydown",
-      (e) => e.key === "Escape" && modal.getAttribute("data-open") === "true" && close()
-    );
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.getAttribute("data-open") === "true") {
+        close();
+      }
+    });
+
     if (location.hash === "#review") open();
 
     // === Нормализация телефона ===
@@ -206,17 +217,20 @@ const {
         );
       return raw;
     }
-    phoneInput?.addEventListener(
-      "blur",
-      () => (phoneInput.value = normalizePhone(phoneInput.value))
-    );
+
+    phoneInput?.addEventListener("blur", () => {
+      phoneInput.value = normalizePhone(phoneInput.value);
+    });
 
     // === Отправка ===
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!(form instanceof HTMLFormElement)) return;
+
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+
+      // honeypot
       if (payload.company) return;
 
       const requiredFields = {
@@ -237,15 +251,22 @@ const {
       if (missing.length > 0) {
         Object.keys(requiredFields).forEach((key) => {
           const el = form.querySelector(`[name="${key}"]`);
-          if (!payload[key] || String(payload[key]).trim() === "") el?.classList.add("is-error");
+          if (!payload[key] || String(payload[key]).trim() === "") {
+            el?.classList.add("is-error");
+          }
         });
-        showOverlayMessage(`Заполните: ${missing.join(", ")}.`, "error", 2800);
+        const msg = `Заполните: ${missing.join(", ")}.`;
+        showOverlayMessage(msg, "error", 2800);
+        setFeedback(msg, "error");
         return;
       }
 
       try {
-        submitBtn.setAttribute("disabled", "true");
-        submitBtn.textContent = "Отправляем…";
+        if (submitBtn instanceof HTMLButtonElement) {
+          submitBtn.setAttribute("disabled", "true");
+          submitBtn.textContent = "Отправляем…";
+        }
+
         await new Promise((r) => setTimeout(r, 400 + Math.random() * 300));
 
         const res = await fetch(WEBHOOK_URL, {
@@ -262,18 +283,26 @@ const {
         });
 
         if (res.ok) {
-          showOverlayMessage("🌸 Спасибо за отзыв! Нам очень приятно 💖", "success", 2600);
+          const okMsg = "🌸 Спасибо за отзыв! Нам очень приятно 💖";
+          showOverlayMessage(okMsg, "success", 2600);
+          setFeedback("Спасибо за отзыв! Нам очень приятно 💖", "success");
           form.reset();
           setTimeout(close, 2800);
         } else {
-          showOverlayMessage("⚠️ Ошибка при отправке. Попробуйте позже.", "error", 2800);
+          const errMsg = "⚠️ Ошибка при отправке. Попробуйте позже.";
+          showOverlayMessage(errMsg, "error", 2800);
+          setFeedback(errMsg, "error");
         }
       } catch (err) {
         console.error(err);
-        showOverlayMessage("❌ Ошибка соединения. Проверьте интернет.", "error", 2800);
+        const netMsg = "❌ Ошибка соединения. Проверьте интернет.";
+        showOverlayMessage(netMsg, "error", 2800);
+        setFeedback(netMsg, "error");
       } finally {
-        submitBtn.removeAttribute("disabled");
-        submitBtn.textContent = defaultSubmitText;
+        if (submitBtn instanceof HTMLButtonElement) {
+          submitBtn.removeAttribute("disabled");
+          submitBtn.textContent = defaultSubmitText;
+        }
       }
     });
   })();
