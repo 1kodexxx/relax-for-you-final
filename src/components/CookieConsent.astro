@@ -1,10 +1,9 @@
 ---
 /**
  * CookieConsent.astro
- * - По центру, полностью адаптивно по ширине/высоте
- * - Текст как на 2-м скрине
- * - Кнопка контурная
- * - Прод: плавное закрытие + удаление из DOM + лок скролла
+ * - По умолчанию: снизу, <= 20% экрана, свернутый вид
+ * - Есть "Подробнее" => разворачивает полную версию по центру
+ * - В полной версии: lock scroll, плавное закрытие + удаление из DOM
  * - Флаг в localStorage
  * - Debug: ?cc=1 принудительно показывает
  */
@@ -16,36 +15,74 @@ const {
   text = `Продолжая использовать наш сайт, вы даёте согласие на обработку файлов cookie и пользовательских данных
 (сведения о местоположении; тип и версия ОС; тип и версия браузера; тип устройства и разрешение экрана; источник откуда пришел пользователь; с какого сайта или по какой рекламе; язык ОС и браузера; какие страницы открывает пользователь и на какие кнопки нажимает пользователь; ip-адрес) с помощью интернет-сервисов Яндекс.Метрика, Google Analytics и Facebook в целях функционирования сайта, проведения ретаргетинга, проведения статистических исследований и обзоров.
 `,
+  acceptLabel = "СОГЛАСЕН",
+  expandLabel = "Подробнее",
+  collapseLabel = "Свернуть",
 } = Astro.props;
 ---
 
 <section class="cc" data-cc-root aria-live="polite" aria-label="Уведомление о cookies" hidden>
-  <div
-    class="cc__card"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="cc-title"
-    aria-describedby="cc-text"
-  >
-    <div class="cc__head">
-      <div class="cc__badge" aria-hidden="true"></div>
-      <h3 class="cc__title" id="cc-title">{title}</h3>
-    </div>
+  <!-- Нижний свернутый баннер -->
+  <div class="cc__bar" data-cc-bar>
+    <div class="cc__barCard" role="region" aria-label="Cookie баннер">
+      <div class="cc__barHead">
+        <div class="cc__badge" aria-hidden="true"></div>
+        <h3 class="cc__title">{title}</h3>
+      </div>
 
-    <p class="cc__text" id="cc-text">
-      {text}
-      <span class="cc__more"><a href={policyHref}>Подробнее</a></span>
-    </p>
+      <p class="cc__barText" data-cc-preview></p>
 
-    <div class="cc__actions">
-      <button class="cc__btn" type="button" data-cc-accept>СОГЛАСЕН</button>
+      <div class="cc__barActions">
+        <button class="cc__btn cc__btn--ghost" type="button" data-cc-expand>
+          {expandLabel}
+        </button>
+
+        <button class="cc__btn" type="button" data-cc-accept>
+          {acceptLabel}
+        </button>
+      </div>
     </div>
   </div>
 
-  <script is:inline define:vars={{ storageKey }}>
+  <!-- Полная версия по центру -->
+  <div class="cc__modal" data-cc-modal aria-hidden="true">
+    <div
+      class="cc__card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cc-title"
+      aria-describedby="cc-text"
+    >
+      <div class="cc__head">
+        <div class="cc__badge" aria-hidden="true"></div>
+        <h3 class="cc__title" id="cc-title">{title}</h3>
+
+        <button class="cc__x" type="button" data-cc-collapse aria-label="Свернуть">
+          {collapseLabel}
+        </button>
+      </div>
+
+      <p class="cc__text" id="cc-text">
+        {text}
+        <span class="cc__more"><a href={policyHref}>Подробнее</a></span>
+      </p>
+
+      <div class="cc__actions">
+        <button class="cc__btn" type="button" data-cc-accept>{acceptLabel}</button>
+
+        <a class="cc__btn cc__btn--ghost" href={policyHref}> Политика </a>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ storageKey, text }}>
     (function () {
       const root = document.querySelector("[data-cc-root]");
       if (!root) return;
+
+      const bar = root.querySelector("[data-cc-bar]");
+      const modal = root.querySelector("[data-cc-modal]");
+      const previewEl = root.querySelector("[data-cc-preview]");
 
       const lockScroll = () => document.documentElement.classList.add("cc-lock");
       const unlockScroll = () => document.documentElement.classList.remove("cc-lock");
@@ -64,7 +101,6 @@ const {
         } catch (_) {}
       };
 
-      // ✅ Debug: ?cc=1 принудительно показывает (удобно тестировать)
       const forceShow = (() => {
         try {
           const u = new URL(window.location.href);
@@ -74,37 +110,73 @@ const {
         }
       })();
 
-      // Если согласие уже есть и не debug — не показываем
       if (hasConsent() && !forceShow) {
         unlockScroll();
         root.remove();
         return;
       }
 
-      // ✅ Показ
+      // Утилита превью текста (коротко, чтобы низ не раздувался)
+      const makePreview = (s) => {
+        const t = String(s || "")
+          .replace(/\s+/g, " ")
+          .trim();
+        const max = 240;
+        return t.length <= max ? t : t.slice(0, max).trimEnd() + "…";
+      };
+
+      if (previewEl) {
+        previewEl.textContent = makePreview(text) + " ";
+        const a = document.createElement("a");
+        a.href = "#";
+        a.textContent = "";
+        // ссылку "Политика" оставляем отдельной кнопкой/линком в модалке
+      }
+
+      // Показ свернутого баннера
       root.hidden = false;
-      root.classList.add("cc--open");
-      lockScroll();
+      root.classList.add("cc--bar-open");
+      root.setAttribute("data-cc-state", "bar");
 
       let closing = false;
 
-      const close = () => {
+      const openModal = () => {
+        if (!modal) return;
+        root.setAttribute("data-cc-state", "modal");
+        root.classList.remove("cc--bar-open");
+        root.classList.add("cc--modal-open");
+
+        modal.setAttribute("aria-hidden", "false");
+        lockScroll();
+      };
+
+      const closeModalToBar = () => {
+        if (!modal) return;
+        root.setAttribute("data-cc-state", "bar");
+        root.classList.remove("cc--modal-open");
+        root.classList.add("cc--bar-open");
+
+        modal.setAttribute("aria-hidden", "true");
+        unlockScroll();
+      };
+
+      const closeAll = () => {
         if (closing) return;
         closing = true;
 
         setConsent();
 
-        // ✅ Закрытие с анимацией
-        root.classList.remove("cc--open");
+        // если была открыта модалка — сначала разблокируем скролл
+        unlockScroll();
+
+        root.classList.remove("cc--bar-open", "cc--modal-open");
         root.classList.add("cc--hide");
         root.setAttribute("aria-hidden", "true");
 
         const removeNow = () => {
-          unlockScroll();
           if (root && root.parentNode) root.parentNode.removeChild(root);
         };
 
-        // transitionend может не сработать — ставим фолбэк
         let done = false;
         const onEnd = () => {
           if (done) return;
@@ -114,14 +186,37 @@ const {
         };
 
         root.addEventListener("transitionend", onEnd);
-        window.setTimeout(onEnd, 320);
+        window.setTimeout(onEnd, 360);
       };
 
-      // ✅ Делегирование клика — всегда сработает
+      // Делегирование клика
       root.addEventListener("click", (e) => {
         const t = e.target;
         if (!(t instanceof Element)) return;
-        if (t.closest("[data-cc-accept]")) close();
+
+        if (t.closest("[data-cc-accept]")) {
+          e.preventDefault();
+          closeAll();
+          return;
+        }
+
+        if (t.closest("[data-cc-expand]")) {
+          e.preventDefault();
+          openModal();
+          return;
+        }
+
+        if (t.closest("[data-cc-collapse]")) {
+          e.preventDefault();
+          closeModalToBar();
+          return;
+        }
+
+        // клик по фону модалки => свернуть
+        if (t === modal) {
+          closeModalToBar();
+          return;
+        }
       });
 
       window.addEventListener("pagehide", unlockScroll, { once: true });
@@ -129,7 +224,7 @@ const {
   </script>
 
   <style>
-    /* Лок скролла, пока окно активно */
+    /* Лок скролла только в полной версии */
     html.cc-lock,
     html.cc-lock body {
       overflow: hidden;
@@ -138,11 +233,93 @@ const {
       touch-action: none;
     }
 
-    /* Центр + адаптив + safe-area */
+    /* ROOT */
     .cc {
       position: fixed;
       inset: 0;
       z-index: 99999;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.2s var(--e1);
+    }
+
+    .cc--hide {
+      opacity: 0;
+    }
+
+    /* ======== НИЖНИЙ БАННЕР (свернутый) ======== */
+    .cc__bar {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      pointer-events: none;
+
+      padding: max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+
+      display: grid;
+      place-items: end center;
+    }
+
+    .cc__barCard {
+      pointer-events: auto;
+
+      width: min(960px, 100%);
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(59, 44, 53, 0.8);
+
+      background: linear-gradient(180deg, rgba(24, 18, 23, 0.92) 0%, rgba(14, 10, 11, 0.9) 100%);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      position: relative;
+      overflow: hidden;
+
+      padding: 14px 14px 12px;
+
+      transform: translateY(10px);
+      opacity: 0;
+      transition:
+        opacity 0.22s var(--e1),
+        transform 0.22s var(--e1);
+    }
+
+    .cc__barCard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 60%);
+      pointer-events: none;
+    }
+
+    .cc--bar-open .cc__barCard {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* 20% высоты: ограничиваем текст и внутреннюю прокрутку не включаем, только превью */
+    .cc__barText {
+      position: relative;
+      z-index: 1;
+      margin: 8px 0 10px;
+
+      color: rgba(248, 233, 240, 0.82);
+      font-size: 12px;
+      line-height: 1.45;
+
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ======== МОДАЛКА (полная версия) ======== */
+    .cc__modal {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
 
       display: grid;
       place-items: center;
@@ -155,26 +332,21 @@ const {
       -webkit-backdrop-filter: blur(6px);
 
       opacity: 0;
-      pointer-events: none;
       transition: opacity 0.2s var(--e1);
     }
 
-    .cc--open {
+    .cc--modal-open .cc__modal {
       opacity: 1;
       pointer-events: auto;
     }
 
-    .cc--hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-
     .cc__card {
+      pointer-events: auto;
+
       position: relative;
       width: min(620px, 100%);
       max-width: 100%;
 
-      /* чтобы никогда не вылезало по высоте */
       max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       overflow: hidden;
 
@@ -194,34 +366,24 @@ const {
         transform 0.2s var(--e1);
     }
 
-    .cc--open .cc__card {
+    .cc--modal-open .cc__card {
       transform: translateY(0) scale(1);
       opacity: 1;
     }
 
-    .cc--hide .cc__card {
-      opacity: 0;
-      transform: translateY(10px) scale(0.99);
-    }
-
-    /* Глянец */
-    .cc__card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 60%);
-      pointer-events: none;
-    }
-
-    .cc__head {
+    /* Head */
+    .cc__head,
+    .cc__barHead {
       display: grid;
       grid-template-columns: 14px 1fr auto;
       align-items: center;
       gap: 10px;
-      margin-bottom: 10px;
       position: relative;
       z-index: 1;
+    }
+
+    .cc__barHead {
+      grid-template-columns: 14px 1fr;
     }
 
     .cc__badge {
@@ -240,33 +402,35 @@ const {
       color: var(--text-primary);
       opacity: 0.92;
       font-weight: 700;
+      position: relative;
+      z-index: 1;
     }
 
-    .cc__chat {
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
+    .cc__x {
+      appearance: none;
+      cursor: pointer;
       border-radius: 999px;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255, 79, 167, 0.35), rgba(24, 18, 23, 0.4) 60%),
-        rgba(255, 79, 167, 0.12);
-      border: 1px solid rgba(255, 79, 167, 0.22);
-      color: rgba(248, 233, 240, 0.92);
-      box-shadow: 0 14px 38px rgba(255, 43, 106, 0.22);
-      text-decoration: none;
+      padding: 8px 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      font-size: 12px;
+      color: var(--text-primary);
+      background: transparent;
+      border: 1px solid rgba(255, 79, 167, 0.35);
       transition:
         transform 0.18s var(--e1),
-        box-shadow 0.18s var(--e1);
+        background 0.18s var(--e1);
+      position: relative;
+      z-index: 1;
     }
 
-    .cc__chat:hover {
+    .cc__x:hover {
+      background: rgba(255, 79, 167, 0.08);
       transform: translateY(-1px);
-      box-shadow: var(--shadow-rose);
     }
 
     .cc__text {
-      margin: 0;
+      margin: 10px 0 0;
       color: rgba(248, 233, 240, 0.82);
       font-size: 12px;
       line-height: 1.45;
@@ -305,15 +469,18 @@ const {
       border-bottom: 1px dashed rgba(255, 79, 167, 0.55);
     }
 
-    .cc__actions {
+    .cc__actions,
+    .cc__barActions {
       display: flex;
+      flex-wrap: wrap;
       justify-content: flex-start;
+      gap: 10px;
       margin-top: 12px;
       position: relative;
       z-index: 1;
     }
 
-    /* Контурная кнопка */
+    /* Контурная кнопка (твоя логика сохранена) */
     .cc__btn {
       appearance: none;
       cursor: pointer;
@@ -336,6 +503,10 @@ const {
         transform 0.18s var(--e1),
         box-shadow 0.18s var(--e1),
         background 0.18s var(--e1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .cc__btn:hover {
@@ -355,11 +526,21 @@ const {
       outline-offset: 3px;
     }
 
+    /* Вторая кнопка (легче) */
+    .cc__btn--ghost {
+      border-color: rgba(255, 79, 167, 0.35);
+      box-shadow: none;
+    }
+
     @media (max-width: 520px) {
       .cc__card {
         width: 100%;
         border-radius: var(--radius-lg);
         padding: 14px 14px 12px;
+      }
+
+      .cc__barCard {
+        border-radius: var(--radius-lg);
       }
     }
 
