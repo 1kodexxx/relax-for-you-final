@@ -1,7 +1,9 @@
+import { glob } from "astro/loaders"; //
 import { defineCollection, z } from "astro:content";
 
 const masters = defineCollection({
-  type: "content",
+  // Добавляем загрузчик для папки masters
+  loader: glob({ pattern: "**/*.md", base: "./src/content/masters" }),
   schema: z.object({
     name: z.string(),
     role: z.string(),
@@ -21,7 +23,8 @@ const masters = defineCollection({
 });
 
 const massages = defineCollection({
-  type: "content",
+  // Добавляем загрузчик для папки massages
+  loader: glob({ pattern: "**/*.md", base: "./src/content/massages" }),
   schema: z.object({
     title: z.string(),
     duration: z.string(),
@@ -37,7 +40,8 @@ const massages = defineCollection({
 });
 
 const reviews = defineCollection({
-  type: "content",
+  // Добавляем загрузчик для папки reviews[cite: 1]
+  loader: glob({ pattern: "**/*.md", base: "./src/content/reviews" }),
   schema: z.object({
     name: z.string(),
     date: z.string(),
@@ -49,7 +53,8 @@ const reviews = defineCollection({
 });
 
 const gallery = defineCollection({
-  type: "content",
+  // Добавляем загрузчик для папки gallery[cite: 1]
+  loader: glob({ pattern: "**/*.md", base: "./src/content/gallery" }),
   schema: z.object({
     caption: z.string(),
     image: z.string(),

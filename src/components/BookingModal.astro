@@ -234,6 +234,7 @@ const {
     const masterSelect = modal.querySelector("#booking-master");
     const phoneInput = modal.querySelector("#booking-phone");
     const dateInput = modal.querySelector("#booking-date");
+    const timeSelect = modal.querySelector("#booking-time");
     const defaultSubmitText = submitBtn?.textContent || "";
 
     // === Центрированные overlay-сообщения ===
@@ -282,6 +283,124 @@ const {
 
       dateInput.min = toIso(today);
       dateInput.max = toIso(maxDate);
+
+      // Если дата ещё не выбрана (в некоторых браузерах), поставим сегодня по умолчанию
+      if (!dateInput.value) {
+        dateInput.value = toIso(today);
+      }
+    }
+
+    // === Запрет записи "в прошедшее время" (сегодня + прошедшие часы) + жёсткая проверка на submit ===
+    const isSameLocalDate = (a, b) =>
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate();
+
+    function parseDateInputLocal(value) {
+      // value: YYYY-MM-DD -> локальная дата 00:00
+      if (!value) return null;
+      const y = Number(value.slice(0, 4));
+      const m = Number(value.slice(5, 7)) - 1;
+      const d = Number(value.slice(8, 10));
+      if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
+      return new Date(y, m, d, 0, 0, 0, 0);
+    }
+
+    function getSelectedDateTimeLocal() {
+      if (!(dateInput instanceof HTMLInputElement)) return null;
+      if (!(timeSelect instanceof HTMLSelectElement)) return null;
+
+      const dateStr = dateInput.value; // YYYY-MM-DD
+      const timeStr = timeSelect.value; // HH:00
+      if (!dateStr || !timeStr) return null;
+
+      const y = Number(dateStr.slice(0, 4));
+      const m = Number(dateStr.slice(5, 7)) - 1;
+      const d = Number(dateStr.slice(8, 10));
+
+      const hh = Number(timeStr.slice(0, 2));
+      const mm = Number(timeStr.slice(3, 5));
+
+      const dt = new Date(y, m, d, hh, mm, 0, 0);
+      if (isNaN(dt.getTime())) return null;
+      return dt;
+    }
+
+    function updateTimeOptionsForDate() {
+      if (!(dateInput instanceof HTMLInputElement)) return;
+      if (!(timeSelect instanceof HTMLSelectElement)) return;
+
+      const selectedDate = parseDateInputLocal(dateInput.value);
+      if (!selectedDate) return;
+
+      const now = new Date();
+      const isToday = isSameLocalDate(selectedDate, now);
+
+      // Если нужен минимальный "зазор" (например, запись минимум за 30 минут), поставь 30
+      const leadMinutes = 0;
+      const cutoff = new Date(now.getTime() + leadMinutes * 60 * 1000);
+
+      let firstEnabledValue = null;
+
+      Array.from(timeSelect.options).forEach((opt) => {
+        const v = String(opt.value || "");
+        const hh = Number(v.slice(0, 2));
+        const mm = Number(v.slice(3, 5));
+
+        const candidate = new Date(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth(),
+          selectedDate.getDate(),
+          Number.isFinite(hh) ? hh : 0,
+          Number.isFinite(mm) ? mm : 0,
+          0,
+          0
+        );
+
+        const shouldDisable = isToday ? candidate < cutoff : false;
+        opt.disabled = shouldDisable;
+
+        if (!shouldDisable && !firstEnabledValue) {
+          firstEnabledValue = opt.value;
+        }
+      });
+
+      // Если выбранный вариант стал disabled — переключаем на ближайший доступный
+      const cur = timeSelect.selectedOptions?.[0];
+      if (cur?.disabled) {
+        if (firstEnabledValue) {
+          timeSelect.value = firstEnabledValue;
+        }
+      } else if (!timeSelect.value && firstEnabledValue) {
+        timeSelect.value = firstEnabledValue;
+      }
+
+      // Если на сегодня слотов не осталось — подскажем пользователю
+      if (isToday && !firstEnabledValue) {
+        showOverlayMessage(
+          "На сегодня свободных слотов по времени уже нет. Выберите другую дату.",
+          "error",
+          3200
+        );
+        setFeedback(
+          "На сегодня свободных слотов по времени уже нет. Выберите другую дату.",
+          "error"
+        );
+      }
+    }
+
+    // Инициализация ограничений времени
+    updateTimeOptionsForDate();
+
+    if (dateInput instanceof HTMLInputElement) {
+      dateInput.addEventListener("change", updateTimeOptionsForDate);
+      dateInput.addEventListener("input", updateTimeOptionsForDate);
+    }
+    if (timeSelect instanceof HTMLSelectElement) {
+      timeSelect.addEventListener("change", () => {
+        // Если пользователь вручную выбрал disabled (какие-то браузеры/скрипты) — корректируем
+        updateTimeOptionsForDate();
+      });
     }
 
     // === localStorage: запоминаем имя и телефон ===
@@ -332,6 +451,9 @@ const {
         masterSelect.value = master;
       }
 
+      // Обновляем слоты времени под текущую дату (важно при повторном открытии)
+      updateTimeOptionsForDate();
+
       requestAnimationFrame(() => {
         if (firstField instanceof HTMLElement) {
           firstField.focus();
@@ -352,6 +474,18 @@ const {
       if (form instanceof HTMLFormElement) {
         form.reset();
       }
+
+      // После reset() дата может стать пустой — вернём сегодня и обновим время
+      if (dateInput instanceof HTMLInputElement) {
+        const today = new Date();
+        const toIso = (d) => {
+          const copy = new Date(d.getTime());
+          copy.setHours(0, 0, 0, 0);
+          return copy.toISOString().split("T")[0];
+        };
+        dateInput.value = toIso(today);
+      }
+      updateTimeOptionsForDate();
     };
 
     // ✅ Делегирование на документе — ловим любые триггеры, в т.ч. динамические
@@ -413,6 +547,9 @@ const {
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // Перед проверками ещё раз обновим доступность времени (на случай долгого открытия модалки)
+        updateTimeOptionsForDate();
+
         const fd = new FormData(form);
         const payload = Object.fromEntries(fd.entries());
 
@@ -446,6 +583,35 @@ const {
           showOverlayMessage(`Заполните: ${missing.join(", ")}.`, "error", 2800);
           setFeedback(`Заполните: ${missing.join(", ")}.`, "error");
           return;
+        }
+
+        // === ЖЁСТКИЙ запрет записи в прошедшее время (даже если кто-то подменил HTML через DevTools) ===
+        const selectedDT = getSelectedDateTimeLocal();
+        if (!selectedDT) {
+          showOverlayMessage("Выберите корректные дату и время.", "error", 2800);
+          setFeedback("Выберите корректные дату и время.", "error");
+          return;
+        }
+
+        const now = new Date();
+        if (selectedDT.getTime() < now.getTime()) {
+          showOverlayMessage(
+            "Нельзя записаться на прошедшее время. Выберите дату/время позже.",
+            "error",
+            3200
+          );
+          setFeedback("Нельзя записаться на прошедшее время. Выберите дату/время позже.", "error");
+          return;
+        }
+
+        // Если выбранное время disabled — тоже блокируем (например, если браузер позволил выбрать)
+        if (timeSelect instanceof HTMLSelectElement) {
+          const opt = timeSelect.selectedOptions?.[0];
+          if (opt?.disabled) {
+            showOverlayMessage("Выбранное время уже недоступно. Выберите другое.", "error", 3000);
+            setFeedback("Выбранное время уже недоступно. Выберите другое.", "error");
+            return;
+          }
         }
 
         try {

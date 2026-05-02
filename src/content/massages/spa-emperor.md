@@ -1,5 +1,5 @@
 ---
-title: "Body EROTIC"
+title: "Body МАССАЖ"
 duration: "60 минут"
 price: 6000
 description: >

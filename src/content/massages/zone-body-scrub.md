@@ -1,5 +1,5 @@
 ---
-title: "ELITE-Erotic"
+title: "ELITE-Массаж"
 duration: "90 минут"
 price: 20000
 description: >
