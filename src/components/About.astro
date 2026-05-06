@@ -11,10 +11,6 @@ const faq = [
     q: "Что взять с собой?",
     a: "Ничего не требуется. У нас есть одноразовые принадлежности, тёплые полотенца, душ и напитки.",
   },
-  {
-    q: "Как гарантируете конфиденциальность?",
-    a: "Мы бережно относимся к частной жизни гостей: закрытая запись по времени, индивидуальные комнаты и отсутствие ожидания с другими клиентами.",
-  },
 ];
 ---
 
@@ -23,296 +19,157 @@ const faq = [
   <section class="about-hero" id="about" aria-labelledby="about-title">
     <div class="about-hero__glow" aria-hidden="true"></div>
 
-    <div class="container about-hero__inner">
-      <p class="about-eyebrow fade-up" aria-label="Город Мурманск">Relax For You • Мурманск</p>
-      <h1 class="about-title fade-up" id="about-title">Эстетика удовольствия и наслаждения</h1>
-      <p class="about-subtitle fade-up">
-        Премиальная компания массажа и СПА-услуг в самом сердце Мурманска. Атмосфера расслабления,
-        уюта и красоты. Внимание и забота для каждого посетителя. Профессионализм и
-        доброжелательность мастеров-исполнителей. Наша цель — подарить нашим людям счастье, здоровье
-        и любовь!
-      </p>
-
-      <div class="about-stats" role="list" aria-label="Ключевые показатели">
-        <div class="about-stat fade-up" role="listitem">
-          <span class="about-stat__num" data-to="25" aria-hidden="true">25</span><span
-            class="about-stat__unit"
-            aria-hidden="true">+</span
-          >
-          <p aria-live="polite">видов массажа и СПА-услуг</p>
+    <!-- ===== INTRO ===== -->
+    <section class="about-intro" aria-labelledby="about-intro-title">
+      <div class="container about-grid">
+        <div class="about-col about-col--text fade-up">
+          <h2 id="about-intro-title">О нас</h2>
+          <p>Здравствуйте, дорогие друзья!</p>
+          <p>
+            Для каждого клиента предусмотрены все удобства. От А до Я! До и после процедуры Вы
+            можете принять тёплый душ, а также насладиться вкусным чаем в приятной беседе с
+            мастером. Одноразовые тапочки, махровые полотенца, эфирные масла, ароматные свечи,
+            только в Relax For You.
+          </p>
+          <p>
+            Мы действительно вложили душу в наше дело и мы уверены, что результат достоин! Наши
+            возможности и программы постоянно улучшаются, а это значит, что каждый найдёт для себя
+            что-то стоящее и подходящее. Попробуйте Лучшее в Relax For You, мы ждём именно тебя!
+          </p>
         </div>
-        <div class="about-stat fade-up" role="listitem" style="animation-delay:.06s">
-          <span class="about-stat__num" data-to="10" aria-hidden="true">10</span><span
-            class="about-stat__unit"
-            aria-hidden="true">+</span
-          >
-          <p aria-live="polite">мастеров авторского СПА- массажа</p>
+
+        <ul class="about-col about-col--perks about-perks fade-up" aria-label="Преимущества студии">
+          <li>
+            <span class="about-perks__icon" aria-hidden="true">
+              <!-- 🕯️ -->
+              <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
+                <path
+                  d="M12 2a2 2 0 0 0-2 2v1a2 2 0 0 0 4 0V4a2 2 0 0 0-2-2Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"></path>
+                <rect
+                  x="8"
+                  y="8"
+                  width="8"
+                  height="12"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="1.6"></rect>
+              </svg>
+            </span>
+            Комфортная и уютная атмосфера
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== PROCESS ===== -->
+    <section class="about-process" aria-labelledby="about-process-title">
+      <div class="about-process__glow" aria-hidden="true"></div>
+      <div class="container">
+        <div class="about-process__head">
+          <span class="about-process__tag fade-up">Путь гостя</span>
+          <h2 class="fade-up" id="about-process-title" style="animation-delay:.04s">
+            Как проходит визит
+          </h2>
+          <p class="about-process__intro fade-up" style="animation-delay:.08s">
+            Наши ритуалы выстроены так, чтобы каждая минута была наполнена заботой. Вы заранее
+            знаете, что будет дальше, а мы — как подарить максимум удовольствия.
+          </p>
         </div>
-        <div class="about-stat fade-up" role="listitem" style="animation-delay:.06s">
-          <span class="about-stat__num" data-to="3" aria-hidden="true">3</span><span
-            class="about-stat__unit"
-            aria-hidden="true">+</span
-          >
-          <p aria-live="polite">СПА-салонов красоты и массажа</p>
+
+        <ol class="about-steps" aria-label="Этапы визита">
+          <li class="about-steps__item fade-up">
+            <div class="about-steps__header">
+              <span class="about-step" aria-hidden="true">1</span>
+              <h3>Запись любым способом</h3>
+            </div>
+            <p>
+              Свяжитесь с нами по звонку, через сообщения или онлайн. Мы сможем предложить для вас
+              идеальную дату и время, подходящую программу и специалиста. Вы легко получите
+              консультацию по интересующим вопросам, если они у вас есть.
+            </p>
+          </li>
+          <!-- <li class="about-steps__item fade-up" style="animation-delay:.04s">
+            <div class="about-steps__header">
+              <span class="about-step" aria-hidden="true">2</span>
+              <h3>Путь до студии</h3>
+            </div>
+            <p>
+              Мы находимся в центре города, поэтому до нас легко добраться из любой точки. На данный
+              момент в вашем распоряжении 3 премиальных салона массажа и СПА-услуг. Если вы на
+              автомобиле, у нас присутствует стоянка во дворе студии.
+            </p>
+          </li> -->
+          <li class="about-steps__item fade-up" style="animation-delay:.08s">
+            <div class="about-steps__header">
+              <span class="about-step" aria-hidden="true">2</span>
+              <h3>Обряд подготовки</h3>
+            </div>
+            <p>
+              Начальное знакомство с мастером и студией, а также консультация от профессионала по
+              практическим вопросам. Перед началом процесса учтен комфортный душ и ароматные
+              благоухания.
+            </p>
+          </li>
+          <li class="about-steps__item fade-up" style="animation-delay:.12s">
+            <div class="about-steps__header">
+              <span class="about-step" aria-hidden="true">3</span>
+              <h3>Массаж и СПА-процедуры</h3>
+            </div>
+            <p>
+              Главная часть нашего мероприятия, его величество массаж. Теплые и нежные руки
+              исполнителя ласкают ваше тело, полностью с головы до ног. Профессиональные техники
+              исполнения расслабляют и тонизируют мышцы, а энергия мастера исцеляет душу.
+            </p>
+          </li>
+          <li class="about-steps__item fade-up" style="animation-delay:.16s">
+            <div class="about-steps__header">
+              <span class="about-step" aria-hidden="true">4</span>
+              <h3>Церемония завершения</h3>
+            </div>
+            <p>
+              После окончания основной части процедуры у вас есть возможность снова принять душ,
+              побыть в приятной беседе с мастером. Мы предлагаем на выбор чай или кофе, а также
+              премиальный бар в уютной атмосфере.
+            </p>
+          </li>
+        </ol>
+
+        <figure class="about-process__quote fade-up" style="animation-delay:.24s">
+          <blockquote>
+            «Попробуй <strong>Relax For You</strong> однажды — и ты захочешь вернуться снова!»
+          </blockquote>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="about-faq" aria-labelledby="about-faq-title">
+      <div class="container">
+        <h2 class="fade-up" id="about-faq-title">Частые вопросы</h2>
+        <div class="about-faq__list">
+          {
+            faq.map((item) => (
+              <details class="about-faq__item fade-up">
+                <summary>{item.q}</summary>
+                <div class="about-faq__ans">{item.a}</div>
+              </details>
+            ))
+          }
         </div>
       </div>
+    </section>
 
-      <!-- ===== 🎬 ВИДЕО-ПЛЕЕР ===== -->
-      <figure class="about-video fade-up" style="animation-delay:.1s">
-        <video
-          class="about-video__el"
-          autoplay
-          muted
-          loop
-          playsinline
-          controls
-          preload="metadata"
-          poster="/placeholder-hero.jpg"
-        >
-          <source src="/video-two.mp4" type="video/mp4" />
-          Ваш браузер не поддерживает встроенные видео.
-        </video>
-        <figcaption class="about-video__cap">
-          Короткий видеомомент атмосферы Relax For You
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <!-- ===== INTRO ===== -->
-  <section class="about-intro" aria-labelledby="about-intro-title">
-    <div class="container about-grid">
-      <div class="about-col about-col--text fade-up">
-        <h2 id="about-intro-title">О нас</h2>
-        <p>
-          Здравствуйте, дорогие друзья! Добро пожаловать в мир самого лучшего массажа в городе
-          Мурманск. Мы рады представить для Вас премиальную сеть салонов массажа и СПА-услуг Relax
-          For You.
-        </p>
-        <p>
-          Мы расположены в центре города и на выбор предоставлены сразу 3 салона, более 30 видов
-          массажа и СПА-услуг, а так же у нас в студии уже 10 мастеров авторского (чувственного)
-          СПА-массажа. Для каждого клиента предусмотрены все удобства. От А до Я! До и после
-          процедуры Вы можете принять тёплый душ, а также насладиться вкусным чаем в приятной беседе
-          с мастером. Одноразовые тапочки, махровые полотенца, эфирные масла, ароматные свечи,
-          прохладительные напитки, элитный бар и качественная продукция только в студиях Relax For
-          You.
-        </p>
-        <p>
-          Мы действительно вложили душу в наше дело и мы уверены, что результат достоин! Наши
-          возможности и программы постоянно улучшаются, а это значит, что каждый найдёт для себя
-          что-то стоящее и подходящее. Попробуйте Лучшее в Relax For You, мы ждём именно тебя!
-        </p>
+    <!-- ===== CTA ===== -->
+    <section class="about-cta" aria-labelledby="about-cta-title">
+      <div class="container about-cta__box">
+        <div>
+          <h2 id="about-cta-title">Готовы выбрать программу?</h2>
+          <p class="about-cta__sub">Поможем определиться и найдём удобное время сегодня.</p>
+        </div>
+        <a class="about-btn" href="#booking" aria-label="Записаться"> Записаться </a>
       </div>
-
-      <ul class="about-col about-col--perks about-perks fade-up" aria-label="Преимущества студии">
-        <li>
-          <span class="about-perks__icon" aria-hidden="true">
-            <!-- 🕯️ -->
-            <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-              <path
-                d="M12 2a2 2 0 0 0-2 2v1a2 2 0 0 0 4 0V4a2 2 0 0 0-2-2Z"
-                stroke="currentColor"
-                stroke-width="1.6"></path>
-              <rect
-                x="8"
-                y="8"
-                width="8"
-                height="12"
-                rx="2"
-                stroke="currentColor"
-                stroke-width="1.6"></rect>
-            </svg>
-          </span>
-          Комфортная и уютная атмосфера
-        </li>
-
-        <li>
-          <span class="about-perks__icon" aria-hidden="true">
-            <!-- 🍷 + Wi-Fi -->
-            <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-              <path d="M8 3h8v4a4 4 0 0 1-8 0V3Z" stroke="currentColor" stroke-width="1.6"></path>
-              <path d="M12 11v6M9 21h6" stroke="currentColor" stroke-width="1.6"></path>
-              <path
-                d="M3 17c2-2 5-3 9-3s7 1 9 3"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"></path>
-              <path
-                d="M7 17c1.2-.8 3-.8 5-.8s3.8 0 5 .8"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"></path>
-            </svg>
-          </span>
-          Бесплатный бар и Wi-Fi
-        </li>
-
-        <li>
-          <span class="about-perks__icon" aria-hidden="true">
-            <!-- 👩‍🎓 -->
-            <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-              <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"></circle>
-              <path
-                d="M5 20c.4-3.2 3.4-5 7-5s6.6 1.8 7 5"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"></path>
-              <path d="M18 4l.8 2.3L21 7l-2.2.7L18 10l-.8-2.3L15 7l2.2-.7L18 4Z" fill="currentColor"
-              ></path>
-            </svg>
-          </span>
-          Квалифицированные мастера и исполнительницы
-        </li>
-
-        <li>
-          <span class="about-perks__icon" aria-hidden="true">
-            <!-- 🧴 -->
-            <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-              <rect
-                x="9"
-                y="4"
-                width="6"
-                height="16"
-                rx="2"
-                stroke="currentColor"
-                stroke-width="1.6"></rect>
-              <path d="M10 2h4v2h-4zM9 8h6" stroke="currentColor" stroke-width="1.6"></path>
-            </svg>
-          </span>
-          Одноразовые и высококачественные материалы
-        </li>
-
-        <li>
-          <span class="about-perks__icon" aria-hidden="true">
-            <!-- 🔒 -->
-            <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-              <rect
-                x="5"
-                y="10"
-                width="14"
-                height="10"
-                rx="2"
-                stroke="currentColor"
-                stroke-width="1.6"></rect>
-              <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"></path>
-              <path
-                d="M12 13c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1s-1-.4-1-1v-2c0-.6.4-1 1-1Z"
-                fill="currentColor"></path>
-            </svg>
-          </span>
-          Полная конфиденциальность для наших гостей
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===== PROCESS ===== -->
-  <section class="about-process" aria-labelledby="about-process-title">
-    <div class="about-process__glow" aria-hidden="true"></div>
-    <div class="container">
-      <div class="about-process__head">
-        <span class="about-process__tag fade-up">Путь гостя</span>
-        <h2 class="fade-up" id="about-process-title" style="animation-delay:.04s">
-          Как проходит визит
-        </h2>
-        <p class="about-process__intro fade-up" style="animation-delay:.08s">
-          Наши ритуалы выстроены так, чтобы каждая минута была наполнена заботой. Вы заранее знаете,
-          что будет дальше, а мы — как подарить максимум удовольствия.
-        </p>
-      </div>
-
-      <ol class="about-steps" aria-label="Этапы визита">
-        <li class="about-steps__item fade-up">
-          <div class="about-steps__header">
-            <span class="about-step" aria-hidden="true">1</span>
-            <h3>Запись любым способом</h3>
-          </div>
-          <p>
-            Свяжитесь с нами по звонку, через сообщения или онлайн. Мы сможем предложить для вас
-            идеальную дату и время, подходящую программу и специалиста. Вы легко получите
-            консультацию по интересующим вопросам, если они у вас есть.
-          </p>
-        </li>
-        <li class="about-steps__item fade-up" style="animation-delay:.04s">
-          <div class="about-steps__header">
-            <span class="about-step" aria-hidden="true">2</span>
-            <h3>Путь до студии</h3>
-          </div>
-          <p>
-            Мы находимся в центре города, поэтому до нас легко добраться из любой точки. На данный
-            момент в вашем распоряжении 3 премиальных салона массажа и СПА-услуг. Если вы на
-            автомобиле, у нас присутствует стоянка во дворе студии.
-          </p>
-        </li>
-        <li class="about-steps__item fade-up" style="animation-delay:.08s">
-          <div class="about-steps__header">
-            <span class="about-step" aria-hidden="true">3</span>
-            <h3>Обряд подготовки</h3>
-          </div>
-          <p>
-            Начальное знакомство с мастером и студией, а также консультация от профессионала по
-            практическим вопросам. Перед началом процесса учтен комфортный душ и ароматные
-            благоухания.
-          </p>
-        </li>
-        <li class="about-steps__item fade-up" style="animation-delay:.12s">
-          <div class="about-steps__header">
-            <span class="about-step" aria-hidden="true">4</span>
-            <h3>Массаж и СПА-процедуры</h3>
-          </div>
-          <p>
-            Главная часть нашего мероприятия, его величество массаж. Теплые и нежные руки
-            исполнителя ласкают ваше тело, полностью с головы до ног. Профессиональные техники
-            исполнения расслабляют и тонизируют мышцы, а энергия мастера исцеляет душу.
-          </p>
-        </li>
-        <li class="about-steps__item fade-up" style="animation-delay:.16s">
-          <div class="about-steps__header">
-            <span class="about-step" aria-hidden="true">5</span>
-            <h3>Церемония завершения</h3>
-          </div>
-          <p>
-            После окончания основной части процедуры у вас есть возможность снова принять душ,
-            побыть в приятной беседе с мастером. Мы предлагаем на выбор чай или кофе, а также
-            премиальный бар в уютной атмосфере.
-          </p>
-        </li>
-      </ol>
-
-      <figure class="about-process__quote fade-up" style="animation-delay:.24s">
-        <blockquote>
-          «Попробуй <strong>Relax For You</strong> однажды — и ты захочешь вернуться снова!»
-        </blockquote>
-      </figure>
-    </div>
-  </section>
-
-  <!-- ===== FAQ ===== -->
-  <section class="about-faq" aria-labelledby="about-faq-title">
-    <div class="container">
-      <h2 class="fade-up" id="about-faq-title">Частые вопросы</h2>
-      <div class="about-faq__list">
-        {
-          faq.map((item) => (
-            <details class="about-faq__item fade-up">
-              <summary>{item.q}</summary>
-              <div class="about-faq__ans">{item.a}</div>
-            </details>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== CTA ===== -->
-  <section class="about-cta" aria-labelledby="about-cta-title">
-    <div class="container about-cta__box">
-      <div>
-        <h2 id="about-cta-title">Готовы выбрать программу?</h2>
-        <p class="about-cta__sub">Поможем определиться и найдём удобное время сегодня.</p>
-      </div>
-      <a class="about-btn" href="#booking" aria-label="Записаться"> Записаться </a>
-    </div>
+    </section>
   </section>
 </div>

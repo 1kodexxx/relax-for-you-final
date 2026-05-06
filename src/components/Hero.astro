@@ -7,21 +7,7 @@ import "@/styles/hero.css";
   <div class="glow" aria-hidden="true"></div>
 
   <!-- 🔥 Видеофон -->
-  <video
-    id="bgVideo"
-    class="bg"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="auto"
-    poster="/placeholder-hero.jpg"
-  >
-    <source src="/video-bg-mobile.webm" type="video/webm" media="(max-width: 900px)" />
-    <source src="/video-bg-mobile.mp4" type="video/mp4" media="(max-width: 900px)" />
-    <source src="/video-bg-desktop.webm" type="video/webm" media="(min-width: 901px)" />
-    <source src="/video-bg-desktop.mp4" type="video/mp4" media="(min-width: 901px)" />
-  </video>
+  <img id="bgVideo" class="bg" src="/background.png" />
 
   <div class="overlay" aria-hidden="true"></div>
 
@@ -39,15 +25,15 @@ import "@/styles/hero.css";
     </div>
 
     <h1 class="hero-title reveal" style="--d:.10s">
-      Сеть премиальных салонов <br /> МАССАЖА и СПА-УСЛУГ
+      <br /> СПА-программа
     </h1>
 
     <p class="hero-subtitle reveal" style="--d:.18s">
-      Самый ЛУЧШИЙ чувственный МАССАЖ и СПА для МУЖЧИН в городе Мурманск! <br />
+      Релаксационный комплексный уход за телом и лицом для мужчин и женщин. <br />
     </p>
 
     <p class="hero-slogan-box reveal" style="--d:.26s">
-      <em>Откройте для себя мир эстетики и удовольствия!</em>
+      <em>Мы предлагаем программу для снятия мышечного и умственного перенапряжения.</em>
     </p>
 
     <div class="hero-buttons reveal" style="--d:.34s">
@@ -91,7 +77,7 @@ import "@/styles/hero.css";
       </a>
 
       <a
-        href="https://wa.me/+79533025946"
+        href="https://wa.me/+79522900191"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp"
@@ -150,40 +136,40 @@ import "@/styles/hero.css";
         <span class="status-dot"></span>
         <p>
           Дорогие гости, в данный момент наша компания <b>неактивна</b>.<br />
-          Мы будем рады принять Вас в рабочие часы — <b>с 12:00 до 00:00</b>.<br />
+          Мы будем рады принять Вас в рабочие часы — <b>с 12:00 до 21:00</b>.<br />
           До новых ощущений 💫
         </p>
       </div>
     </div>
   </div>
-
-  <script is:inline>
-    (function () {
-      const v = document.getElementById("bgVideo");
-      if (v) {
-        v.muted = true;
-        v.playsInline = true;
-        const ready = () => {
-          v.classList.add("is-ready");
-          const p = v.play();
-          if (p && p.catch) p.catch(() => {});
-        };
-        if (v.readyState >= 3) ready();
-        else {
-          v.addEventListener("canplay", ready, { once: true });
-          setTimeout(() => !v.classList.contains("is-ready") && ready(), 1200);
-        }
-      }
-
-      const notice = document.getElementById("closedNotice");
-      if (notice) {
-        const hour = new Date().getHours();
-        if (hour >= 0 && hour < 8) {
-          // 👇 Показываем плашку всегда (для теста)
-          notice.hidden = false;
-          notice.classList.add("visible");
-        }
-      }
-    })();
-  </script>
 </section>
+
+<script is:inline>
+  (function () {
+    const v = document.getElementById("bgVideo");
+    if (v) {
+      v.muted = true;
+      v.playsInline = true;
+      const ready = () => {
+        v.classList.add("is-ready");
+        const p = v.play();
+        if (p && p.catch) p.catch(() => {});
+      };
+      if (v.readyState >= 3) ready();
+      else {
+        v.addEventListener("canplay", ready, { once: true });
+        setTimeout(() => !v.classList.contains("is-ready") && ready(), 1200);
+      }
+    }
+
+    const notice = document.getElementById("closedNotice");
+    if (notice) {
+      const hour = new Date().getHours();
+      if (hour >= 0 && hour < 8) {
+        // 👇 Показываем плашку всегда (для теста)
+        notice.hidden = false;
+        notice.classList.add("visible");
+      }
+    }
+  })();
+</script>

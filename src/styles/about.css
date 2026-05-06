@@ -491,3 +491,36 @@
     max-width: 600px;
   }
 }
+
+/* Обращаемся к конкретному списку преимуществ */
+.about-perks {
+  /* Если родитель — Flexbox, это не даст списку растянуться во всю высоту */
+  align-self: flex-start;
+
+  /* Ограничиваем высоту контентом */
+  height: fit-content;
+
+  /* Убираем стандартные отступы, если они мешают */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-perks li {
+  display: flex;
+  align-items: center; /* Центрируем иконку относительно текста по вертикали */
+  gap: 12px; /* Расстояние между иконкой и текстом */
+  margin-bottom: 16px; /* Отступ между пунктами списка */
+
+  /* Гарантируем, что сам li не растягивается */
+  height: auto;
+}
+
+.about-perks__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Чтобы иконка не сжималась */
+  width: 24px; /* Фиксированный размер для эстетики */
+  height: 24px;
+}
