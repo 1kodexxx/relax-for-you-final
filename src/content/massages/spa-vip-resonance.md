@@ -1,5 +1,5 @@
 ---
-title: "VIP"
+title: "Гармонизирующая тантра"
 duration: "60 минут"
 price: 12000
 description: >

@@ -1,5 +1,5 @@
 ---
-title: "ЭКСПРЕСС Lingam"
+title: "Испанский массаж лица"
 duration: "30 минут"
 price: 4000
 description: >

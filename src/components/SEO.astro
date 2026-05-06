@@ -1,6 +1,6 @@
 ---
 /**
- * 🌐 SEO для Relax For You — версия с упором на Яндекс
+ * 🌐 SEO для "Гармония СПА" — версия с упором на Яндекс
  * - meta keywords оставляем (Яндекс почти не учитывает, но не мешает)
  * - добавлены: yandex-verification, robots/noindex, hreflang, улучшенный OG/Twitter
  * - JSON-LD: два филиала (DaySpa), geo + часы, ссылки sameAs
@@ -15,21 +15,21 @@ export interface Props {
   keywords?: string;
   robots?: string;    // напр. "index,follow" | "noindex,nofollow"
   locale?: string;    // "ru_RU"
-  siteName?: string;  // "Relax For You"
+  siteName?: string;  // "Гармония СПА"
   hreflang?: string;  // "ru"
   yandexVerification?: string; // код в Яндекс.Вебмастере
   yandexMetrikaId?: string;    // ID счётчика (например, "12345678")
 }
 
 const {
-  title = "Relax For You — Премиальные массажные салоны в Мурманске",
-  description = "Массаж и SPA-программы от сертифицированных мастеров. Эстетика, комфорт и полное расслабление. Онлайн-запись и подарочные сертификаты.",
+  title = "Гармония СПА — Авторские SPA-программы в Мурманске",
+  description = "Авторские SPA-программы.",
   image = "/assets/og-default.jpg",
   url = "https://relaxmassage51.ru",
-  keywords = "массаж Мурманск, Relax For You, SPA, премиум массаж, салон красоты, релакс массаж, relaxmassage51, массажный салон Мурманск, массаж для двоих, антицеллюлитный массаж, лимфодренажный массаж, запись на массаж",
+  keywords = "Гармония СПА, SPA",
   robots = "index,follow",
   locale = "ru_RU",
-  siteName = "Relax For You",
+  siteName = "Гармония СПА",
   hreflang = "ru",
   yandexVerification,
   yandexMetrikaId,
@@ -75,20 +75,20 @@ const ogImage = absolute(image);
     {
       "@type":"DaySpa",
       "@id": `${url}#org`,
-      "name":"Relax For You",
-      "alternateName":"Эстетик SPA",
+      "name":"Гармония СПА",
+      "alternateName":"Гармония СПА",
       "url": url,
       "image": ogImage,
       "telephone":"+7-911-332-29-17",
       "priceRange":"₽₽₽",
       "sameAs":[
-        "https://t.me/Relax4YOU51",
+        "https://t.me/",
         "https://wa.me/79113322917"
       ]
     },
     {
       "@type":"DaySpa",
-      "name":"Relax For You — Трудовых резервов",
+      "name":"Гармония СПА",
       "parentOrganization": {"@id": `${url}#org`},
       "url": url,
       "image": ogImage,
@@ -115,7 +115,7 @@ const ogImage = absolute(image);
     },
     {
       "@type":"DaySpa",
-      "name":"Relax For You — Карла Маркса",
+      "name":"Гармония СПА — Октябрьский район",
       "parentOrganization": {"@id": `${url}#org`},
       "url": url,
       "image": ogImage,

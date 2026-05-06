@@ -1,4 +1,4 @@
-/* Relax For You — Scroll reveal (устойчивый к Safari и старым браузерам) */
+/* "Гармония СПА" — Scroll reveal (устойчивый к Safari и старым браузерам) */
 (function () {
   const doc = document;
   const root = doc.documentElement;

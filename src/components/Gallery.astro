@@ -20,7 +20,7 @@ let baseGallery = Object.keys(galleryFiles).map((path, index) => {
   const displayNumber = String(num).padStart(2, "0");
   return {
     src: `/assets/gallery/${filename}`,
-    alt: `Премиальная атмосфера Relax For You — фото ${displayNumber}`,
+    alt: `Премиальная атмосфера Гармонии СПА — фото ${displayNumber}`,
     order: index,
   };
 });
@@ -48,7 +48,7 @@ for (let i = baseGallery.length - 1; i > 0; i--) {
 <section
   id="gallery"
   class="gallery"
-  aria-label="Галерея Relax For You"
+  aria-label="Галерея Гармонии СПА"
   data-gallery
   data-initial-count={INITIAL_VISIBLE}
 >
@@ -58,7 +58,7 @@ for (let i = baseGallery.length - 1; i > 0; i--) {
   <div class="container">
     <div class="gallery-head">
       <p class="eyebrow">Интерьер</p>
-      <h2 class="title">Галерея Relax For You</h2>
+      <h2 class="title">Галерея Гармонии СПА</h2>
       <p class="subtitle">
         Атмосфера уюта, света и спокойствия — каждая деталь продумана для вашего релакса.
       </p>
@@ -190,7 +190,7 @@ for (let i = baseGallery.length - 1; i > 0; i--) {
       const item = items[i];
       if (!item) return;
       imageEl.src = item.src;
-      imageEl.alt = item.alt || "Изображение из галереи Relax For You";
+      imageEl.alt = item.alt || "Изображение из галереи Гармонии СПА";
     };
 
     const openLightbox = (i) => {

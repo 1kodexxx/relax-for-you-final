@@ -1,11 +1,11 @@
 {
-  "name": "Relax For You — Премиальные массажные салоны",
-  "short_name": "Relax For You",
+  "name": "Гармония СПА — Мурманск",
+  "short_name": "Гармония СПА",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0e0a0b",
   "theme_color": "#ff2b6a",
-  "description": "Сеть премиальных массажных салонов и SPA-услуг в Мурманске.",
+  "description": "SPA-услуги в Мурманске.",
   "icons": [
     {
       "src": "/favicon.png",

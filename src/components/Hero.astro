@@ -13,19 +13,19 @@ import "@/styles/hero.css";
 
   <!-- === Контент === -->
   <div class="container inner text-center">
-    <div class="logo-wrap reveal" style="--d:.05s">
+    <!-- <div class="logo-wrap reveal" style="--d:.05s">
       <img
         src="/relax-for-you.png"
-        alt="Relax For You"
+        alt="Логотип Гармонии СПА"
         width="220"
         height="auto"
         class="hero-logo"
         loading="lazy"
       />
-    </div>
+    </div> -->
 
     <h1 class="hero-title reveal" style="--d:.10s">
-      <br /> СПА-программа
+      Расслабляющие программы с пользой <br />и высокой энергией блага
     </h1>
 
     <p class="hero-subtitle reveal" style="--d:.18s">
@@ -45,7 +45,7 @@ import "@/styles/hero.css";
     <!-- 🌸 Соцсети -->
     <div class="hero-socials reveal" style="--d:.46s">
       <a
-        href="https://vk.com/massagerelax51"
+        href="https://vk.com/id17057820"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="ВКонтакте"
@@ -61,7 +61,7 @@ import "@/styles/hero.css";
       </a>
 
       <a
-        href="https://t.me/relaxmassage51"
+        href="https://t.me/IrinaMassage79"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Telegram"
@@ -93,7 +93,7 @@ import "@/styles/hero.css";
         </div>
       </a>
 
-      <a
+      <!-- <a
         href="viber://chat?number=%2B79533025946"
         target="_blank"
         rel="noopener noreferrer"
@@ -111,9 +111,9 @@ import "@/styles/hero.css";
           </svg>
           <span>Viber</span>
         </div>
-      </a>
+      </a> -->
 
-      <a
+      <!-- <a
         href="https://www.instagram.com/irina.mur_/"
         target="_blank"
         rel="noopener noreferrer"
@@ -128,48 +128,49 @@ import "@/styles/hero.css";
           <span>Instagram</span>
         </div>
       </a>
-    </div>
+    </div> -->
 
-    <!-- 🌙 Плашка "Закрыто" строго под соцсетями -->
-    <div id="closedNotice" class="closed-notice" hidden>
-      <div class="closed-inner">
-        <span class="status-dot"></span>
-        <p>
-          Дорогие гости, в данный момент наша компания <b>неактивна</b>.<br />
-          Мы будем рады принять Вас в рабочие часы — <b>с 12:00 до 21:00</b>.<br />
-          До новых ощущений 💫
-        </p>
+      <!-- 🌙 Плашка "Закрыто" строго под соцсетями -->
+      <div id="closedNotice" class="closed-notice" hidden>
+        <div class="closed-inner">
+          <span class="status-dot"></span>
+          <p>
+            Дорогие гости, в данный момент наша компания <b>неактивна</b>.<br />
+            Мы будем рады принять Вас в рабочие часы — <b>с 12:00 до 21:00</b>.<br />
+            До новых ощущений 💫
+          </p>
+        </div>
       </div>
     </div>
   </div>
+
+  <script is:inline>
+    (function () {
+      const v = document.getElementById("bgVideo");
+      if (v) {
+        v.muted = true;
+        v.playsInline = true;
+        const ready = () => {
+          v.classList.add("is-ready");
+          const p = v.play();
+          if (p && p.catch) p.catch(() => {});
+        };
+        if (v.readyState >= 3) ready();
+        else {
+          v.addEventListener("canplay", ready, { once: true });
+          setTimeout(() => !v.classList.contains("is-ready") && ready(), 1200);
+        }
+      }
+
+      const notice = document.getElementById("closedNotice");
+      if (notice) {
+        const hour = new Date().getHours();
+        if (hour >= 0 && hour < 8) {
+          // 👇 Показываем плашку всегда (для теста)
+          notice.hidden = false;
+          notice.classList.add("visible");
+        }
+      }
+    })();
+  </script>
 </section>
-
-<script is:inline>
-  (function () {
-    const v = document.getElementById("bgVideo");
-    if (v) {
-      v.muted = true;
-      v.playsInline = true;
-      const ready = () => {
-        v.classList.add("is-ready");
-        const p = v.play();
-        if (p && p.catch) p.catch(() => {});
-      };
-      if (v.readyState >= 3) ready();
-      else {
-        v.addEventListener("canplay", ready, { once: true });
-        setTimeout(() => !v.classList.contains("is-ready") && ready(), 1200);
-      }
-    }
-
-    const notice = document.getElementById("closedNotice");
-    if (notice) {
-      const hour = new Date().getHours();
-      if (hour >= 0 && hour < 8) {
-        // 👇 Показываем плашку всегда (для теста)
-        notice.hidden = false;
-        notice.classList.add("visible");
-      }
-    }
-  })();
-</script>

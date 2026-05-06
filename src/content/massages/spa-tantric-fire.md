@@ -1,5 +1,5 @@
 ---
-title: "Тантрический"
+title: "Самадхи"
 duration: "60 минут"
 price: 8000
 description: >

@@ -1,5 +1,5 @@
 ---
-title: "LUX"
+title: "Энергетический релакс-баланс"
 duration: "60 минут"
 price: 18000
 description: >

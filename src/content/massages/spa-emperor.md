@@ -1,5 +1,5 @@
 ---
-title: "Body МАССАЖ"
+title: "Антистресс"
 duration: "60 минут"
 price: 6000
 description: >
